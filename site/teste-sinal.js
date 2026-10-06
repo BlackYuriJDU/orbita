@@ -36,10 +36,29 @@ function elementoFalso() {
     value: '',
     style: {},
     filhos: [],
+    // O navegador tem classList; o stub anterior não, e isso escondeu um bug:
+    // renderRotina() nunca era chamado no caminho testado, então o erro
+    // aparecia só no navegador. Add é o que a app usa.
+    classList: {
+      _classes: new Set(),
+      add(c) { this._classes.add(c); },
+      remove(c) { this._classes.delete(c); },
+      contains(c) { return this._classes.has(c); },
+    },
     appendChild(filho) { this.filhos.push(filho); return filho; },
     addEventListener() {},
     click() { if (this.aoClicar) this.aoClicar(); },
   };
+
+  // No DOM de verdade, innerHTML = '' destrói os filhos. O stub precisa fazer
+  // o mesmo: sem isso, os filhos de todos os renders se acumulam e a contagem
+  // mente — foi o que deixou as duas verificações de tela passarem errado.
+  let htmlInterno = '';
+  Object.defineProperty(el, 'innerHTML', {
+    get() { return htmlInterno; },
+    set(v) { htmlInterno = v; if (v === '') el.filhos.length = 0; },
+  });
+
   return el;
 }
 
@@ -227,6 +246,42 @@ conferir('10. e não vibra quando o aluno pediu o Modo Calmo',
     sentiu;
   `) === false,
   'o aparelho ainda vibrou com o Modo Calmo ligado');
+
+/* --- 11. abrir um item DESPENHA a tela da tarefa --------------------------- */
+/* Bug real, encontrado abrindo no navegador depois: abrirItem() trocava a tela
+   mas não chamava renderTarefa(). O aluno via só os botões que já vivem no
+   HTML — "Está difícil" e "Voltar" — com enunciado e alternativas vazios.
+   Voltavam a aparecer depois de pedir ajuda, porque escolherAjuda() chama
+   renderTarefa(). Este teste existe para o bug não voltar. */
+noApp(`
+  dados = { versao: 1, modoCalmo: false, itens: montarRotina(), tentativas: [] };
+  sessao = null;
+  abrirItem(ITENS[0].id);
+`);
+const enunciadoNaTela = noApp('pegar("txt-enunciado").textContent');
+conferir('11. abrir o item escreve o enunciado na tela',
+  enunciadoNaTela === noApp('ITENS[0].enunciado'),
+  'veio ' + JSON.stringify(enunciadoNaTela));
+conferir('11. e monta uma alternativa por opção do item',
+  noApp('pegar("alternativas").filhos.length') === noApp('ITENS[0].opcoes.length'),
+  'veio ' + noApp('pegar("alternativas").filhos.length'));
+conferir('11. o enunciado não é o vazio que ficava na tela',
+  enunciadoNaTela.length > 20);
+
+/* --- 12. acertar REDESENHA a rotina ---------------------------------------- */
+/* O segundo bug do mesmo tipo: ao acertar, o app voltava para a rotina sem
+   chamar renderRotina(). O item não saía de "AGORA", a barra não andava, e
+   para o aluno parecia que nada tinha acontecido. */
+const itensNaRotina = noApp('pegar("lista-rotina").filhos.length');
+noApp('abrirItem(ITENS[0].id); respondeu(true);');
+conferir('12. ao acertar, o item fica concluído no estado',
+  noApp('dados.itens[0].concluido') === true);
+conferir('12. e recebe a classe "feito" na tela',
+  noApp('pegar("lista-rotina").filhos[0].classList.contains("feito")') === true,
+  'classes: ' + noApp('JSON.stringify([...pegar("lista-rotina").filhos[0].classList._classes])'));
+conferir('12. e a rotina continua com todos os itens, nenhum sumiu',
+  noApp('pegar("lista-rotina").filhos.length') === itensNaRotina,
+  'era ' + itensNaRotina + ', veio ' + noApp('pegar("lista-rotina").filhos.length'));
 
 /* --- Resultado --- */
 

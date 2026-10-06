@@ -163,6 +163,7 @@ function abrirItem(itemId) {
     respondendo: false,
   };
   mostrar('tarefa');
+  renderTarefa();
 }
 
 /* Errou. A resposta é sempre acolhedora, nunca corretiva. E o aluno continua
@@ -245,6 +246,7 @@ function respondeu(correta) {
     sessao = null;
     vibrar([18, 45, 18]);
     mostrar('rotina');
+    renderRotina();
     return;
   }
 

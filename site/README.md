@@ -36,7 +36,13 @@ verifica o caminho que a câmera mostra: errar sem ajuda → pedir "passos" → 
 E verifica o contra-teste: errar **depois** da ajuda não pode virar sinal, porque aí o que
 funcionou foi a insistência do aluno, não a representação.
 
-Esperado: **22 verificações passando.**
+As verificações 11 e 12 são de tela, e existem por um motivo específico: **um bug de
+renderização não derruba o estado — só a imagem.** O perfil continuava correto, o item
+continuava salvo, e o aluno via uma tela em branco. É o tipo de falha que sobrevive ao teste de
+lógica e só aparece na frente de alguém. Por isso o stub de DOM precisa ter `classList` e
+fazer `innerHTML = ''` destruir os filhos, como o navegador faz.
+
+Esperado: **28 verificações passando.**
 
 ---
 
