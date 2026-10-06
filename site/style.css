@@ -1,0 +1,471 @@
+/* ÓRBITA — a folha de estilo.
+   Os comentários dizem POR QUÊ, não o quê — se você só quer saber o que a
+   regra faz, o nome da classe já diz.
+
+   TRÊS REGRAS QUE NÃO SE NEGOCIAM:
+
+   Nada que pisque. Sem contagem regressiva, sem badge pulsando, sem "você
+   está perdendo". Para estudantes TEA, hiperestímulo visual é exatamente o
+   modo de falha que este app existe para reduzir. Gamificação aqui não é
+   escopo demais — é contraproducente.
+
+   Alvo de toque grande: nenhum botão abaixo de 56px de altura.
+
+   O texto sobrevive a 200% de zoom. Acessibilidade é o argumento do projeto,
+   então precisa ser verdade, não discurso.
+
+   E UMA REGRA SOBRE MOVIMENTO: o boneco respira e o conteúdo entra com
+   suavidade, porque tela morta não comunica acolhimento. Nenhuma animação
+   pisca, conta nem muda de cor sozinho. E o Modo Calmo zera todas elas —
+   o aluno escolhe, não a gente. */
+
+:root {
+  /* Paleta de baixo estímulo. Medida com o verificador WCAG, não no olho:
+     tinta sobre papel = 9.95:1 (AAA); gelo e creme sobre papel ficam abaixo de
+     3:1 e por isso são só superfície — nunca texto, nunca borda que signifique
+     algo. */
+  --tinta: #2f4156;      /* texto, borda forte */
+  --tinta-fraca: #567c8d; /* texto secundário — 4.29:1, só corpo grande */
+  --linha: #c8d9e6;      /* divisória, campo, estado de foco */
+  --papel: #f6fafd;      /* fundo geral */
+  --creme: #f5efeb;      /* superfície alternativa (dá pra separar do papel) */
+
+  /* O acento marca só uma coisa na tela: o que fazer AGORA. */
+  --acento: #2f4156;
+  --acento-claro: #e8eef4;
+  --feito: #567c8d;
+  --feito-claro: #eaf1f5;
+
+  /* Erro NÃO é vermelho. Nesta tela não existe "errado" — existe "ainda não".
+     A cor de acolhimento é a mesma família do resto do sistema. */
+  --acolhimento: #2f4156;
+  --acolhimento-claro: #e8eef4;
+
+  --raio: 14px;
+  --linha-alt: 56px;
+  --movimento: 1; /* o Modo Calmo põe isto em 0 e tudo congela */
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 18px; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* topo */
+
+.topo {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.5rem;
+  background: var(--creme);
+  border-bottom: 2px solid var(--linha);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topo .marca {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: var(--acento);
+}
+
+.abas { display: flex; gap: 0.5rem; margin-left: auto; }
+
+.aba {
+  min-height: var(--linha-alt);
+  padding: 0 1.1rem;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--papel);
+  color: var(--tinta-fraca);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.aba.ativa {
+  border-color: var(--acento);
+  color: var(--acento);
+  background: var(--acento-claro);
+  font-weight: 600;
+}
+
+.calmo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--tinta-fraca);
+  cursor: pointer;
+}
+
+.calmo input { width: 1.35rem; height: 1.35rem; accent-color: var(--acento); }
+
+/* O boneco. Símbolo internacional da pessoa com deficiência: uma figura de
+   palito dentro de um círculo. Sem rosto e sem expressão de propósito — é um
+   símbolo de acessibilidade, não uma caricatura de alguém. */
+
+.boneco {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: none;
+  overflow: visible;
+}
+
+.boneco .anel { fill: none; stroke: var(--acento); stroke-width: 7; }
+
+.boneco .corpo {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 7;
+  stroke-linecap: round;
+  transform-origin: 24px 24px;
+  /* A respiração é o único movimento do personagem. Lenta o bastante para não
+     compete com a leitura e não pisca — é o que o Modo Calmo corta. */
+  animation: respirar 5s ease-in-out infinite;
+}
+
+.boneco .cabeca { fill: var(--acento); }
+
+@keyframes respirar {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boneco .corpo { animation: none; }
+  .tela-entrando { animation: none; }
+}
+
+/* telas */
+
+.tela {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.tela[hidden] { display: none; }
+
+/* A tela entra com um deslocamento curto e para. Sem loop, sem pulso — só a
+   sensação de que algo chegou, não de que algo está acontecendo. */
+.tela-entrando { animation: entrar 0.28s ease-out both; }
+
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+h2 { font-size: 1.7rem; line-height: 1.3; margin: 0 0 0.5rem; }
+
+.lead { color: var(--tinta-fraca); margin: 0 0 1.75rem; font-size: 1.05rem; }
+
+/* progresso */
+
+.progresso { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+
+.progresso-trilho {
+  flex: 1;
+  height: 10px;
+  background: var(--linha);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progresso-barra {
+  height: 100%;
+  width: 0;
+  background: var(--feito);
+  /* Sem transição animada: o aluno não deve ver a barra "andando". */
+}
+
+/* rotina */
+
+.rotina { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+
+.item-rotina {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.9rem 1.1rem;
+  text-align: left;
+  background: var(--papel);
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+/* Feito: sai de cena. Vira registro, não convite. */
+.item-rotina.feito {
+  background: var(--feito-claro);
+  border-color: var(--feito-claro);
+  color: var(--tinta-fraca);
+  cursor: default;
+}
+
+/* Agora: o único elemento com peso visual forte na tela inteira. */
+.item-rotina.agora {
+  border-color: var(--acento);
+  border-width: 3px;
+  background: var(--acento-claro);
+}
+
+.item-rotina .marca { font-size: 1.5rem; width: 1.6rem; color: var(--tinta-fraca); }
+.item-rotina.feito .marca { color: var(--feito); }
+.item-rotina.agora .marca { color: var(--acento); }
+
+.item-texto { display: flex; flex-direction: column; }
+
+.item-quando {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--tinta-fraca);
+}
+
+.item-rotina.agora .item-quando { color: var(--acento); }
+
+.item-materia { font-size: 1.1rem; }
+
+/* tarefa */
+
+.materia {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--tinta-fraca);
+}
+
+.enunciado {
+  font-size: 1.45rem;
+  line-height: 1.45;
+  margin: 0 0 1.75rem;
+}
+
+.alternativas { display: grid; gap: 0.75rem; }
+
+.alternativa {
+  min-height: 3.75rem;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font: inherit;
+  font-size: 1.1rem;
+  color: inherit;
+  background: var(--papel);
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+
+.alternativa:hover { border-color: var(--acento); }
+
+/* Acolhimento, não penalidade. Sem X, sem vermelho. */
+.msg-erro {
+  margin: 1.25rem 0 0;
+  padding: 1rem 1.25rem;
+  background: var(--acolhimento-claro);
+  border-left: 5px solid var(--acolhimento);
+  border-radius: var(--raio);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.msg-erro[hidden] { display: none; }
+
+/* painel de ajuda */
+
+.painel-ajuda {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--papel);
+  border: 2px solid var(--acento);
+  border-radius: var(--raio);
+}
+
+.painel-ajuda[hidden] { display: none; }
+
+.ajuda-titulo {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--acento);
+}
+
+/* Revelação progressiva: os passos aparecem um a um e os que ainda não
+   chegaram ficam invisíveis — não riscados. Riscado sugere "errado". */
+.passos { margin: 0 0 1rem; padding-left: 1.5rem; }
+.passos li { margin-bottom: 0.65rem; font-size: 1.1rem; }
+
+/* Passo ainda não revelado: some da lista. A app cria um <li> para cada passo
+   e só escreve o texto nos já revelados, então :empty é exatamente o
+   "ainda não chegou" — sem tarja, sem espaço fantasma. */
+.passos li:empty { display: none; }
+
+.passo-fim { margin: 0; color: var(--tinta-fraca); font-style: italic; }
+
+.aviso-sem-voz {
+  margin: 1rem 0 0;
+  padding: 0.9rem 1.1rem;
+  background: var(--acolhimento-claro);
+  border-radius: var(--raio);
+}
+
+/* escolher ajuda */
+
+.lista-ajudas { display: grid; gap: 0.75rem; }
+
+.btn-ajuda {
+  min-height: 3.75rem;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font: inherit;
+  font-size: 1.15rem;
+  color: var(--acento);
+  background: var(--papel);
+  border: 2px solid var(--acento);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+
+.btn-ajuda:hover { background: var(--acento-claro); }
+
+/* O escalonamento é visualmente distinto: não é uma representação, é o pedido
+   para subir de degrau. */
+.btn-escalonar {
+  color: var(--acolhimento);
+  border-color: var(--acolhimento);
+  border-style: dashed;
+}
+
+.btn-escalonar:hover { background: var(--acolhimento-claro); }
+
+.btn-secundario {
+  min-height: var(--linha-alt);
+  padding: 0 1.25rem;
+  font: inherit;
+  color: var(--tinta-fraca);
+  background: transparent;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+
+/* perfil */
+
+.perfil-titulo { margin-bottom: 1.5rem; }
+
+.placar { display: grid; gap: 0.85rem; margin-bottom: 1.75rem; }
+
+.placar-linha {
+  display: grid;
+  grid-template-columns: 8rem 1fr 4.5rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.placar-nome { color: var(--tinta-fraca); }
+
+.placar-barra {
+  height: 12px;
+  background: var(--linha);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.placar-barra span { display: block; height: 100%; background: var(--feito); }
+
+.placar-num { text-align: right; color: var(--tinta-fraca); font-variant-numeric: tabular-nums; }
+
+.por-materia { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem; }
+
+.chip {
+  padding: 0.5rem 0.9rem;
+  background: var(--acento-claro);
+  border: 1px solid var(--acento);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  color: var(--acento);
+}
+
+.perfil-fecho {
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--linha);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--tinta-fraca);
+}
+
+.vazio { color: var(--tinta-fraca); }
+
+/* rodapés */
+
+.rodape-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+}
+
+.rodape-site {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--tinta-fraca);
+  border-top: 1px solid var(--linha);
+}
+
+.rodape-site p { margin: 0; }
+
+/* modo calmo
+   Não é "um tema". É a resposta a uma observação real de sala: alguns
+   estudantes se dispersam com interface densa e com movimento. O Modo Calmo
+   tira o decorativo e o que se move — sem esconder conteúdo, sem mudar a
+   tarefa. É a prova de que a acessibilidade aqui é um interruptor que o
+   aluno opera, não um discurso. */
+
+body.modo-calmo { --movimento: 0; }
+
+body.modo-calmo .boneco .corpo,
+body.modo-calmo .tela-entrando { animation: none; }
+
+body.modo-calmo .lead,
+body.modo-calmo .item-quando,
+body.modo-calmo .materia,
+body.modo-calmo .rodape-site { display: none; }
+
+body.modo-calmo .item-rotina { min-height: 3.75rem; }
+
+body.modo-calmo .enunciado { font-size: 1.6rem; }
+
+/* acessibilidade */
+
+:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

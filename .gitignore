@@ -1,0 +1,7 @@
+# O que o avaliador abre é a pasta site/. O verificador de contraste é
+# ferramenta de desenvolvimento, não parte do sistema.
+contraste.js
+
+# Sistema operacional do Windows
+Thumbs.db
+desktop.ini

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ÓRBITA — adaptação do caminho de aprendizagem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topo">
+    <!-- O boneco é o símbolo internacional da pessoa com deficiência e a
+         marca do app ao mesmo tempo. Sem rosto: é um símbolo de
+         acessibilidade, não uma caricatura. -->
+    <svg class="boneco" viewBox="0 0 48 48" role="img" aria-label="Símbolo internacional da pessoa com deficiência">
+      <circle class="anel" cx="24" cy="24" r="19"/>
+      <g class="corpo">
+        <line x1="24" y1="13" x2="24" y2="28"/>
+        <line x1="24" y1="20" x2="15.5" y2="26.5"/>
+        <line x1="24" y1="20" x2="32.5" y2="26.5"/>
+        <line x1="24" y1="28" x2="17.5" y2="37"/>
+        <line x1="24" y1="28" x2="30.5" y2="37"/>
+      </g>
+      <circle class="cabeca" cx="24" cy="10.5" r="4"/>
+    </svg>
+
+    <h1 class="marca">ÓRBITA</h1>
+
+    <nav class="abas">
+      <button id="btn-rotina" class="aba ativa">Minha rotina</button>
+      <button id="btn-perfil" class="aba">O que funcionou</button>
+    </nav>
+
+    <label class="calmo">
+      <input type="checkbox" id="modo-calmo">
+      <span>Modo calmo</span>
+    </label>
+  </header>
+
+  <main>
+
+    <!-- Abre aqui, e não no laço de ajuda, porque a dor que já está
+         validada é "não sei por onde começar". A ideia do laço é melhor, mas
+         ainda não foi validada com estudantes — e abrir por ela arriscaria os
+         primeiros 20 segundos do vídeo. -->
+    <section id="tela-rotina" class="tela tela-entrando">
+      <h2 class="saudacao">Bom dia, Arthur.</h2>
+      <p class="lead">Vamos por partes. Comece pelo item marcado como <strong>AGORA</strong>.</p>
+
+      <div class="progresso">
+        <div class="progresso-trilho"><div id="barra-progresso" class="progresso-barra"></div></div>
+        <span id="txt-progresso" class="progresso-txt">0%</span>
+      </div>
+
+      <ul id="lista-rotina" class="rotina"></ul>
+
+      <div class="rodape-acoes">
+        <button id="btn-exportar" class="btn-secundario">Baixar meu registro</button>
+        <button id="btn-reiniciar" class="btn-secundario">Recomeçar o dia</button>
+      </div>
+    </section>
+
+    <!-- Sem X vermelho. Sem buzina. Sem contagem de erros na tela. O objetivo
+         desta tela não é medir o erro, é devolver o aluno à tarefa. -->
+    <section id="tela-tarefa" class="tela tela-entrando" hidden>
+      <p class="materia" id="txt-materia"></p>
+      <h2 id="txt-enunciado" class="enunciado"></h2>
+
+      <div id="alternativas" class="alternativas"></div>
+
+      <p id="msg-erro" class="msg-erro" hidden>Quase! Vamos ver juntos?</p>
+
+      <div id="painel-ajuda" class="painel-ajuda" hidden></div>
+
+      <div class="rodape-acoes">
+        <button id="btn-dificil" class="btn-ajuda">Está difícil</button>
+        <button id="btn-nao-entendi" class="btn-ajuda btn-escalonar" hidden>Ainda não entendi</button>
+        <button id="btn-voltar" class="btn-secundario">Voltar para a rotina</button>
+      </div>
+    </section>
+
+    <!-- O momento mais importante do projeto. A pergunta que o aluno
+         responde não é "o que está errado?", e sim "como você quer chegar
+         lá?". A escolha é dele. -->
+    <section id="tela-ajuda" class="tela tela-entrando" hidden>
+      <h2>Como você quer ajuda?</h2>
+      <p class="lead">A pergunta é a mesma. Muda só o caminho para chegar nela.</p>
+
+      <div id="lista-ajudas" class="lista-ajudas"></div>
+
+      <div class="rodape-acoes">
+        <button id="btn-voltar-ajuda" class="btn-secundario">Voltar</button>
+      </div>
+    </section>
+
+    <!-- Perfil derivado e somente-leitura. Um "editor de perfil" seria uma
+         tela que promete uma personalização que o app ainda não usa — e é
+         exatamente a pergunta que a banca faria. -->
+    <section id="tela-perfil" class="tela tela-entrando" hidden>
+      <h2>O que funcionou com você</h2>
+      <div id="perfil-corpo"></div>
+    </section>
+
+  </main>
+
+  <footer class="rodape-site">
+    <p>ÓRBITA — a escola inclui o aluno. ÓRBITA adapta o caminho.</p>
+  </footer>
+
+  <!-- O conteúdo vem ANTES da lógica: app.js depende de ITENS e AJUDAS. -->
+  <script src="seed.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
