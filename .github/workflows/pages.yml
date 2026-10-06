@@ -1,0 +1,51 @@
+# Publica a pasta site/ no GitHub Pages.
+#
+# Por que um workflow em vez do Pages "Deploy from a branch": o Pages só publica
+# a raiz do repositório (ou /docs). Os arquivos estão em site/, e movê-los só por
+# causa do deploy quebraria a separação entre o site e o resto do repo — o
+# contraste.js na raiz é ferramenta, não parte do sistema. Aqui o workflow diz
+# "publica site/" e o resto do repo fica como está.
+#
+# Sem build. O site não tem bundler: os scripts são clássicos justamente para
+# rodar de file://. Este workflow só copia a pasta e sobe.
+
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Um deploy por vez. Concorrência aqui gastaria o limite do Pages sem motivo.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          # O conteúdo do site é exatamente esta pasta. Sem build, sem bundler.
+          path: site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
