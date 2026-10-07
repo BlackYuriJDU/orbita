@@ -46,8 +46,22 @@
          validada é "não sei por onde começar". A ideia do laço é melhor, mas
          ainda não foi validada com estudantes — e abrir por ela arriscaria os
          primeiros 20 segundos do vídeo. -->
-    <section id="tela-rotina" class="tela tela-entrando">
-      <h2 class="saudacao">Bom dia, Arthur.</h2>
+    <!-- Primeira visita só. O nome vai para uma chave separada do histórico —
+         o registro que o aluno baixa não leva o nome dele. -->
+    <section id="tela-nome" class="tela tela-entrando" hidden>
+      <h2>Como você se chama?</h2>
+      <p class="lead">É só para o app te chamar pelo nome.</p>
+      <form id="form-nome" class="form-nome">
+        <label class="rotulo-nome" for="campo-nome">Seu nome</label>
+        <input id="campo-nome" class="campo-nome" type="text"
+               autocomplete="off" autocapitalize="words" spellcheck="false"
+               maxlength="40" placeholder="Escreva aqui">
+        <button type="submit" class="btn-ajuda">Começar</button>
+      </form>
+    </section>
+
+    <section id="tela-rotina" class="tela tela-entrando" hidden>
+      <h2 class="saudacao" id="saudacao"></h2>
       <p class="lead">Vamos por partes. Comece pelo item marcado como <strong>AGORA</strong>.</p>
 
       <div class="progresso">

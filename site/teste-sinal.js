@@ -283,6 +283,40 @@ conferir('12. e a rotina continua com todos os itens, nenhum sumiu',
   noApp('pegar("lista-rotina").filhos.length') === itensNaRotina,
   'era ' + itensNaRotina + ', veio ' + noApp('pegar("lista-rotina").filhos.length'));
 
+/* --- 13. o nome do aluno ------------------------------------------------- */
+/* O nome é o único dado que o aluno DIGITA, e é o único que não vai para o
+   registro exportado. Os dois são decisões, não accidents — por isso são
+   testados. O teste de marcação existe porque um nome com "<" escrito via
+   innerHTML viraria tag: o textoContent na tela é a prova de que não. */
+conferir('13. sem nome salvo, nada é lido do armazenamento',
+  noApp('nomeSalvo()') === '');
+
+noApp('salvarNome("  Maria  ");');
+conferir('13. o nome salvo volta sem os espaços que o aluno digitou',
+  noApp('nomeSalvo()') === 'Maria',
+  'veio ' + JSON.stringify(noApp('nomeSalvo()')));
+
+noApp('renderNome();');
+const saudacao = noApp('pegar("saudacao").textContent');
+conferir('13. a saudação chama o aluno pelo nome',
+  saudacao.indexOf('Maria') !== -1,
+  'veio ' + JSON.stringify(saudacao));
+
+/* "Bom dia" às 22h é o tipo de erro que a tela mostra sem o app quebrar. */
+const hora = new Date().getHours();
+const parteDoDia = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+conferir('13. a saudação usa o período certo do dia',
+  saudacao.indexOf(parteDoDia) === 0,
+  'esperava "' + parteDoDia + '", veio ' + JSON.stringify(saudacao));
+
+conferir('13. o nome NÃO entra no registro do aluno (o log baixado fica anônimo)',
+  noApp('JSON.stringify(dados).indexOf("Maria")') === -1);
+
+noApp('salvarNome("<b>Ana</b>"); renderNome();');
+conferir('13. um nome com marcação aparece como texto, não como HTML',
+  noApp('pegar("saudacao").textContent').indexOf('<b>Ana</b>') !== -1,
+  'o nome foi interpretado como tag — a saudação está usando innerHTML');
+
 /* --- Resultado --- */
 
 console.log('\n' + '-'.repeat(58));

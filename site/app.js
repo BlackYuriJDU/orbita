@@ -4,6 +4,11 @@
 const CHAVE = 'orbita.dados.v1';
 const CHAVE_BAK = 'orbita.dados.v1.bak';
 
+/* O nome do aluno mora NUMA CHAVE SEPARADA, e isso é deliberado. `dados` é o que
+   o app exporta em "Baixar meu registro" — se o nome estivesse junto, o arquivo
+   baixado levaria o nome do aluno. Aqui o histórico fica anônimo. */
+const CHAVE_NOME = 'orbita.nome.v1';
+
 /* Estado do aluno. É isto que é salvo. */
 let dados = {
   versao: 1,
@@ -90,13 +95,12 @@ function montarRotina() {
   return ITENS.map((item) => ({ itemId: item.id, concluido: false }));
 }
 
-function itemAtual() {
-  return dados.itens.find((it) => !it.concluido) || null;
-}
-
+/* O índice do primeiro item ainda não concluído — o único com peso visual
+   forte na tela. Se todos acabaram, o índice vira o tamanho da lista e nenhum
+   item recebe a marca de "AGORA". */
 function indiceDoItemAtual() {
-  const atual = itemAtual();
-  return atual ? dados.itens.indexOf(atual) : dados.itens.length;
+  const idx = dados.itens.findIndex((it) => !it.concluido);
+  return idx === -1 ? dados.itens.length : idx;
 }
 
 function progresso() {
@@ -171,7 +175,6 @@ function abrirItem(itemId) {
    sobe o degrau é ele, tocando "Ainda não entendi". */
 function errou() {
   if (!sessao || sessao.respondendo) return;
-  sessao.respondendo = false;
   sessao.respostaErrada = true;
 
   /* Só conta o erro que aconteceu COM a ajuda na tela. O contador existe para
@@ -206,7 +209,6 @@ function escolherAjuda(ajudaId) {
   sessao.ajudaAtiva = ajudaId;
   sessao.passoAtual = 0;
   sessao.respostaErrada = false;
-  sessao.respondendo = false;
   vibrar(8);
   mostrar('tarefa');
   renderTarefa();
@@ -273,7 +275,7 @@ function falar(texto) {
 }
 
 function mostrar(tela) {
-  for (const nome of ['rotina', 'tarefa', 'ajuda', 'perfil']) {
+  for (const nome of ['nome', 'rotina', 'tarefa', 'ajuda', 'perfil']) {
     const secao = pegar('tela-' + nome);
     if (secao) secao.hidden = nome !== tela;
   }
@@ -291,6 +293,10 @@ function renderProgresso() {
   pegar('txt-progresso').textContent = pct + '%';
 }
 
+/* O rótulo de quando. O item 0 é o AGORA; o resto é agenda, e a agenda não
+   precisa ser precisa para o aluno. */
+const QUANDO = ['AGORA', 'DEPOIS', 'MAIS TARDE'];
+
 function renderRotina() {
   const lista = pegar('lista-rotina');
   lista.innerHTML = '';
@@ -300,13 +306,15 @@ function renderRotina() {
     const item = itemPorId(it.itemId);
     if (!item) return;
 
+    const ehAgora = idx === idxAtual && !it.concluido;
+
     const linha = document.createElement('button');
     linha.className = 'item-rotina';
     if (it.concluido) linha.classList.add('feito');
-    else if (idx === idxAtual) linha.classList.add('agora');
+    else if (ehAgora) linha.classList.add('agora');
 
-    const marca = it.concluido ? '✓' : idx === idxAtual ? '▶' : '○';
-    const quando = idx === 0 ? 'AGORA' : idx === 1 ? 'DEPOIS' : idx === 2 ? 'MAIS TARDE' : 'DEPOIS';
+    const marca = it.concluido ? '✓' : ehAgora ? '▶' : '○';
+    const quando = QUANDO[idx] || 'DEPOIS';
     linha.innerHTML =
       '<span class="marca">' + marca + '</span>' +
       '<span class="item-texto">' +
@@ -522,6 +530,47 @@ function exportarLog() {
   URL.revokeObjectURL(url);
 }
 
+/* --- O nome do aluno ------------------------------------------------------ */
+
+/* Nunca entra no `dados`. Fica em chave própria justamente para isso: o arquivo
+   que o aluno baixa é o registro de APRENDER, e não precisa carregar a
+   identidade de quem aprendeu. Se um dia o app for usado com turma real, o
+   log exportado continua anônimo. */
+function nomeSalvo() {
+  try {
+    return (localStorage.getItem(CHAVE_NOME) || '').trim();
+  } catch (e) {
+    return '';
+  }
+}
+
+function salvarNome(nome) {
+  try {
+    localStorage.setItem(CHAVE_NOME, nome);
+  } catch (e) {
+    /* O nome é o único dado que o aluno digitou. Se não couber, o app segue
+       funcionando com a saudação genérica — perder a personalização é
+       preferível a travar a entrada. */
+  }
+}
+
+/* Saudação por hora do dia. Às 22h "Bom dia" está errado, e o app inteiro se
+   esforça para não dizer a coisa errada na tela. */
+function renderNome() {
+  const h = new Date().getHours();
+  const parte = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  const nome = nomeSalvo();
+  pegar('saudacao').textContent = nome ? parte + ', ' + nome + '.' : parte + '.';
+}
+
+/* Entrada do nome. Só aparece se não houver nome salvo — na segunda visita o
+   aluno vai direto para a rotina, sem atrito. */
+function renderTelaNome() {
+  mostrar('nome');
+  const campo = pegar('campo-nome');
+  if (campo) campo.focus();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const guardado = carregarDados();
   if (guardado) dados = guardado;
@@ -538,33 +587,39 @@ document.addEventListener('DOMContentLoaded', () => {
     aplicarModoCalmo();
   });
 
+  /* Qualquer volta para a tela principal passa por aqui: fechar sessão, trocar
+     a tela e redesenhar. Três botões faziam isso à mão, e um esquecimento
+     significaria a tela trocada sem o conteúdo — que foi exatamente o bug que
+     os testes 11 e 12 pegaram. */
+  function irPara(tela) {
+    sessao = null;
+    mostrar(tela);
+    if (tela === 'rotina') renderRotina();
+    else if (tela === 'perfil') renderPerfil();
+  }
+
   // Usado entre takes da gravação.
   pegar('btn-reiniciar').addEventListener('click', () => {
     if (!confirm('Recomeçar o dia? O histórico de tentativas fica.')) return;
     dados.itens = montarRotina();
-    sessao = null;
     salvarDados();
-    mostrar('rotina');
-    renderRotina();
+    irPara('rotina');
   });
 
-  pegar('btn-rotina').addEventListener('click', () => { sessao = null; mostrar('rotina'); renderRotina(); });
-  pegar('btn-perfil').addEventListener('click', () => { sessao = null; mostrar('perfil'); renderPerfil(); });
+  pegar('btn-rotina').addEventListener('click', () => irPara('rotina'));
+  pegar('btn-perfil').addEventListener('click', () => irPara('perfil'));
 
   /* "Está difícil" fica sempre visível. É a saída do aluno quando trava, e não
      pode viver escondido atrás de menu nenhum. */
   pegar('btn-dificil').addEventListener('click', mostrarAjuda);
   pegar('btn-nao-entendi').addEventListener('click', naoEntendi);
 
-  pegar('btn-voltar').addEventListener('click', () => {
-    sessao = null;
-    mostrar('rotina');
-    renderRotina();
-  });
+  pegar('btn-voltar').addEventListener('click', () => irPara('rotina'));
 
   /* Voltar da escolha de ajuda devolve o aluno à MESMA questão, com o
      enunciado intacto — cancelar uma ajuda não pode custar o trabalho que ele
-     já fez. */
+     já fez. Aqui NÃO passa por irPara: a sessão continua viva, senão o aluno
+     perderia a ajuda que acabou de escolher. */
   pegar('btn-voltar-ajuda').addEventListener('click', () => {
     mostrar('tarefa');
     renderTarefa();
@@ -572,7 +627,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   pegar('btn-exportar').addEventListener('click', exportarLog);
 
-  renderRotina();
-  renderProgresso();
-  mostrar('rotina');
+  /* Entra pelo nome uma vez, depois direto na rotina. A pergunta nunca aparece
+     de novo: um atrito recorrente é o oposto do que o app promete. */
+  pegar('form-nome').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const nome = (pegar('campo-nome').value || '').trim();
+    if (nome) salvarNome(nome);
+    renderNome();
+    irPara('rotina');
+  });
+
+  renderNome();
+  if (nomeSalvo()) irPara('rotina');
+  else renderTelaNome();
 });

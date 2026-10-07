@@ -420,6 +420,35 @@ h2 { font-size: 1.7rem; line-height: 1.3; margin: 0 0 0.5rem; }
 
 .vazio { color: var(--tinta-fraca); }
 
+/* nome do aluno
+
+   O campo tem a mesma altura mínima de qualquer botão (--linha-alt): se o
+   aluno precisa mirar, a mira tem que ser do mesmo tamanho em toda a tela.
+   A borda usa --acento, não a cor de link padrão, para o foco não virar um
+   azul frio fora da paleta. */
+
+.form-nome { display: grid; gap: 0.75rem; max-width: 26rem; }
+
+.rotulo-nome { font-size: 1.05rem; font-weight: 600; }
+
+.campo-nome {
+  min-height: var(--linha-alt);
+  padding: 0 1.1rem;
+  font: inherit;
+  font-size: 1.15rem;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 2px solid var(--linha);
+  border-radius: var(--raio);
+}
+
+.campo-nome::placeholder { color: var(--tinta-fraca); }
+
+.campo-nome:focus { border-color: var(--acento); }
+
+/* Modo Calmo também herecia: some o texto de apoio, não o campo. */
+body.modo-calmo .rotulo-nome { display: none; }
+
 /* rodapés */
 
 .rodape-acoes {
