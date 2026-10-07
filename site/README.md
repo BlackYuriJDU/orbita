@@ -42,7 +42,7 @@ continuava salvo, e o aluno via uma tela em branco. É o tipo de falha que sobre
 lógica e só aparece na frente de alguém. Por isso o stub de DOM precisa ter `classList` e
 fazer `innerHTML = ''` destruir os filhos, como o navegador faz.
 
-Esperado: **28 verificações passando.**
+Esperado: **todas as verificações passando** (a contagem aparece no final do teste).
 
 ---
 
@@ -162,3 +162,17 @@ Isso é verdade: quem escreveu esta estrutura são as pessoas do time.
 | "Funciona sem internet?" | Sim. Nenhuma chamada de rede em tempo de execução |
 | "Como vocês não perdem o progresso?" | Duas chaves no `localStorage`; o log é append-only |
 | "E a acessibilidade, como vocês provam?" | Modo Calmo é um interruptor que o aluno opera: ele zera movimento e vibração na hora |
+
+---
+
+## Fase 1 — correções (branch `melhorias-fase-1`)
+
+- **Conteúdo:** a resposta certa não é mais sempre a primeira opção; a regra de *faz/fazem* estava
+  explicada de forma errada; "rotação" no lugar de translação; alternativas sem sentido no circuito.
+- **Rotina:** o item atual agora é marcado AGORA (antes o rótulo seguia a posição na lista); itens
+  feitos ficam desabilitados e marcados FEITO; a lista é `<ul><li><button>` (HTML válido).
+- **Teclado e leitor de tela:** foco vai para o título a cada troca de tela e para o "Quase!";
+  a aba ativa muda de verdade (`aria-current`).
+- **Voz:** `falar()` não depende mais de `getVoices()` (vinha vazio na 1ª chamada do Chrome).
+- **Sem rede:** removida a fonte do Google; o app usa a fonte do sistema, como o README promete.
+- **Contraste:** texto secundário `#4A6A7A` (4,94:1 no pior fundo), rótulos pequenos maiores.

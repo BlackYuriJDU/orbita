@@ -25,7 +25,7 @@
      3:1 e por isso são só superfície — nunca texto, nunca borda que signifique
      algo. */
   --tinta: #2f4156;      /* texto, borda forte */
-  --tinta-fraca: #567c8d; /* texto secundário — 4.29:1, só corpo grande */
+  --tinta-fraca: #4a6a7a; /* texto secundário — 4.94:1 no pior fundo (AA) */
   --linha: #c8d9e6;      /* divisória, campo, estado de foco */
   --papel: #f6fafd;      /* fundo geral */
   --creme: #f5efeb;      /* superfície alternativa (dá pra separar do papel) */
@@ -54,7 +54,7 @@ body {
   margin: 0;
   background: var(--papel);
   color: var(--tinta);
-  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
@@ -237,7 +237,7 @@ h2 { font-size: 1.7rem; line-height: 1.3; margin: 0 0 0.5rem; }
 .item-texto { display: flex; flex-direction: column; }
 
 .item-quando {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   font-weight: 700;
   color: var(--tinta-fraca);
@@ -251,7 +251,7 @@ h2 { font-size: 1.7rem; line-height: 1.3; margin: 0 0 0.5rem; }
 
 .materia {
   margin: 0 0 0.35rem;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   font-weight: 700;
   color: var(--tinta-fraca);
