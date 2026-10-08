@@ -176,3 +176,14 @@ Isso é verdade: quem escreveu esta estrutura são as pessoas do time.
 - **Voz:** `falar()` não depende mais de `getVoices()` (vinha vazio na 1ª chamada do Chrome).
 - **Sem rede:** removida a fonte do Google; o app usa a fonte do sistema, como o README promete.
 - **Contraste:** texto secundário `#4A6A7A` (4,94:1 no pior fundo), rótulos pequenos maiores.
+
+## Fase 2 — Meus sentidos (branch `melhorias-fase-2`)
+
+- **`efeitos.js` (novo):** sons sintetizados no navegador (acerto sobe, acolhimento desce macio),
+  confete curto e pulo do bonequinho. Sem arquivo de áudio e sem rede. Quem pede reduzir
+  movimento no sistema não recebe confete.
+- **Painel "Meus sentidos":** sons, vibração, leitura da pergunta em voz alta e comemoração —
+  cada um liga e desliga, e o aluno sente na hora o que ligou. O Modo calmo desliga tudo.
+- **Voz:** com "Ler a pergunta em voz alta" ligado, a pergunta é lida ao abrir e aparece o
+  botão "Ouvir a pergunta" (isso NÃO conta como ajuda no perfil).
+- **Limite:** vibração só funciona em Android; no iPhone o app depende de som e tela.

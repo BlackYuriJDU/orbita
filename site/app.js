@@ -13,6 +13,7 @@ const CHAVE_NOME = 'orbita.nome.v1';
 let dados = {
   versao: 1,
   modoCalmo: false,
+  sentidos: { som: true, vibracao: true, voz: false, festa: true },
   itens: [],      // a rotina de hoje: { itemId, concluido }
   tentativas: [], // o log. Só cresce, nunca é reescrito.
 };
@@ -33,10 +34,17 @@ function pegar(id) { return document.getElementById(id); }
 /* Retorno tátil, para quem sente vibração (Android). Nunca é o único retorno:
    toda ação aqui já muda a tela visivelmente, e no Modo Calmo some também. */
 function vibrar(padrao) {
-  if (dados.modoCalmo) return;
+  if (!sentido('vibracao')) return;
   if (typeof navigator === 'undefined' || !navigator.vibrate) return;
   navigator.vibrate(padrao);
 }
+
+/* O que o aluno aceita sentir. O Modo calmo desliga tudo de uma vez. */
+function sentido(nome) {
+  return !dados.modoCalmo && !!(dados.sentidos && dados.sentidos[nome]);
+}
+function som(tipo) { if (sentido('som') && typeof Efeitos !== 'undefined') Efeitos.som(tipo); }
+function festa() { if (sentido('festa') && typeof Efeitos !== 'undefined') Efeitos.festa(); }
 
 function carregarDados() {
   for (const chave of [CHAVE, CHAVE_BAK]) {
@@ -168,6 +176,7 @@ function abrirItem(itemId) {
   };
   mostrar('tarefa');
   renderTarefa();
+  if (sentido('voz')) falar(item.enunciado);
 }
 
 /* Errou. A resposta é sempre acolhedora, nunca corretiva. E o aluno continua
@@ -183,6 +192,7 @@ function errou() {
      de primeira, que é o sinal mais forte que temos. */
   if (sessao.ajudaAtiva) sessao.erros++;
   vibrar(12);
+  som('acolhe');
   renderTarefa();
 }
 
@@ -249,6 +259,8 @@ function respondeu(correta) {
     salvarDados();
     sessao = null;
     vibrar([18, 45, 18]);
+    som('acerto');
+    festa();
     mostrar('rotina');
     renderRotina();
     return;
@@ -345,6 +357,7 @@ function renderTarefa() {
 
   pegar('txt-materia').textContent = MATERIAS[item.materia];
   pegar('txt-enunciado').textContent = item.enunciado;
+  pegar('btn-ouvir').hidden = !sentido('voz');
 
   const caixa = pegar('alternativas');
   caixa.innerHTML = '';
@@ -582,6 +595,7 @@ function renderTelaNome() {
 document.addEventListener('DOMContentLoaded', () => {
   const guardado = carregarDados();
   if (guardado) dados = guardado;
+  dados.sentidos = Object.assign({ som: true, vibracao: true, voz: false, festa: true }, dados.sentidos);
   if (!dados.itens || !dados.itens.length) {
     dados.itens = montarRotina();
   }
@@ -593,6 +607,24 @@ document.addEventListener('DOMContentLoaded', () => {
     dados.modoCalmo = calm.checked;
     salvarDados();
     aplicarModoCalmo();
+  });
+
+  /* Painel "Meus sentidos": ao ligar, o aluno já sente o que ligou. */
+  for (const nome of ['som', 'vibracao', 'voz', 'festa']) {
+    const caixa = pegar('sent-' + nome);
+    caixa.checked = !!dados.sentidos[nome];
+    caixa.addEventListener('change', () => {
+      dados.sentidos[nome] = caixa.checked;
+      salvarDados();
+      if (!caixa.checked) return;
+      if (nome === 'som') som('acerto');
+      else if (nome === 'vibracao') vibrar(40);
+      else if (nome === 'voz') falar('Oi! Eu leio as perguntas para você.');
+      else festa();
+    });
+  }
+  pegar('btn-ouvir').addEventListener('click', () => {
+    if (sessao) falar(itemPorId(sessao.itemId).enunciado);
   });
 
   /* Qualquer volta para a tela principal passa por aqui: fechar sessão, trocar
