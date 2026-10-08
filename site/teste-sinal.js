@@ -39,8 +39,10 @@ function elementoFalso() {
     // O navegador tem classList; o stub anterior não, e isso escondeu um bug:
     // renderRotina() nunca era chamado no caminho testado, então o erro
     // aparecia só no navegador. Add é o que a app usa.
+    setAttribute() {}, focus() {},
     classList: {
       _classes: new Set(),
+      toggle(c, on) { if (on) this._classes.add(c); else this._classes.delete(c); },
       add(c) { this._classes.add(c); },
       remove(c) { this._classes.delete(c); },
       contains(c) { return this._classes.has(c); },
@@ -79,6 +81,8 @@ const contexto = {
   document: {
     getElementById,
     createElement: () => elementoFalso(),
+    querySelector: () => null,
+    querySelectorAll: () => [],
     addEventListener() {},        // não dispara o bootstrap; testamos por unidade
     body: { classList: { toggle() {} } },
   },
@@ -277,8 +281,8 @@ noApp('abrirItem(ITENS[0].id); respondeu(true);');
 conferir('12. ao acertar, o item fica concluído no estado',
   noApp('dados.itens[0].concluido') === true);
 conferir('12. e recebe a classe "feito" na tela',
-  noApp('pegar("lista-rotina").filhos[0].classList.contains("feito")') === true,
-  'classes: ' + noApp('JSON.stringify([...pegar("lista-rotina").filhos[0].classList._classes])'));
+  noApp('pegar("lista-rotina").filhos[0].filhos[0].classList.contains("feito")') === true,
+  'classes: ' + noApp('JSON.stringify([...pegar("lista-rotina").filhos[0].filhos[0].classList._classes])'));
 conferir('12. e a rotina continua com todos os itens, nenhum sumiu',
   noApp('pegar("lista-rotina").filhos.length') === itensNaRotina,
   'era ' + itensNaRotina + ', veio ' + noApp('pegar("lista-rotina").filhos.length'));
@@ -318,6 +322,23 @@ conferir('13. um nome com marcação aparece como texto, não como HTML',
   'o nome foi interpretado como tag — a saudação está usando innerHTML');
 
 /* --- Resultado --- */
+
+
+/* --- Fase 1: conteúdo e rótulos ------------------------------------------ */
+console.log('\nConteúdo e rotina\n');
+const pos = noApp('ITENS.map(i => i.gabarito)');
+conferir('14. a resposta certa não fica sempre na mesma posição', new Set(pos).size > 1, 'posições: ' + pos);
+conferir('14. todo gabarito aponta para uma opção que existe', noApp('ITENS.every(i => i.opcoes[i.gabarito] !== undefined)'));
+conferir('14. nenhuma opção repetida dentro do mesmo item', noApp('ITENS.every(i => new Set(i.opcoes).size === i.opcoes.length)'));
+const textoTodo = noApp('JSON.stringify(ITENS)');
+conferir('15. sem inglês perdido no texto (accompany)', !textoTodo.includes('accompany'));
+conferir('15. a regra de faz/fazem não diz "plural"', !noApp('JSON.stringify(ITENS.find(i => i.id === "por-faz-tres-anos"))').includes('plural'));
+noApp('renderRotina()');
+const rotulos = noApp('pegar("lista-rotina").filhos').map((li) => li.filhos[0].innerHTML);
+const agora = noApp('indiceDoItemAtual()');
+conferir('16. só o item atual é marcado AGORA', rotulos.filter((h) => h.includes('AGORA')).length === 1 && rotulos[agora].includes('AGORA'), JSON.stringify(rotulos.map((h) => h.slice(0, 80))));
+conferir('16. item concluído aparece como FEITO', noApp('dados.itens').every((it, i) => !it.concluido || rotulos[i].includes('FEITO')));
+conferir('17. falar() devolve false sem speechSynthesis (cai no texto)', noApp('falar("oi")') === false);
 
 console.log('\n' + '-'.repeat(58));
 if (falhou === 0) {

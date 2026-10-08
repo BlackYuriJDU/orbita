@@ -221,6 +221,8 @@ function proximoPasso() {
   sessao.passoAtual++;
   vibrar(10);
   renderTarefa();
+  const vistos = document.querySelectorAll('.passo-visivel');
+  focar(vistos[vistos.length - 1]);
 }
 
 function respondeu(correta) {
@@ -262,16 +264,23 @@ function respondeu(correta) {
    mesma informação por outro caminho. Na demonstração isso é somado, nunca
    subtraído. */
 function falar(texto) {
-  if (!('speechSynthesis' in window)) return false;
-  const voz = (window.speechSynthesis.getVoices() || [])
-    .find((v) => v.lang && v.lang.toLowerCase().startsWith('pt'));
-  if (!voz) return false;
+  if (!window.speechSynthesis) return false;
+  /* Sem conferir getVoices(): no Chrome a lista vem vazia na primeira chamada
+     e o app dizia "sem voz" mesmo havendo voz. Com lang pt-BR o navegador
+     escolhe a melhor voz que tiver. */
   window.speechSynthesis.cancel();
   const fala = new SpeechSynthesisUtterance(texto);
-  fala.lang = voz.lang;
-  fala.voice = voz;
+  fala.lang = 'pt-BR';
   window.speechSynthesis.speak(fala);
   return true;
+}
+
+/* Leva o foco do teclado e do leitor de tela para onde o aluno precisa olhar.
+   Sem isso, cada troca de tela deixava o foco num botão que sumiu. */
+function focar(el) {
+  if (!el || !el.focus) return;
+  el.setAttribute('tabindex', '-1');
+  el.focus({ preventScroll: true });
 }
 
 function mostrar(tela) {
@@ -280,6 +289,7 @@ function mostrar(tela) {
     if (secao) secao.hidden = nome !== tela;
   }
   window.scrollTo(0, 0);
+  focar(document.querySelector('#tela-' + tela + ' h2'));
 }
 
 function aplicarModoCalmo() {
@@ -293,10 +303,6 @@ function renderProgresso() {
   pegar('txt-progresso').textContent = pct + '%';
 }
 
-/* O rótulo de quando. O item 0 é o AGORA; o resto é agenda, e a agenda não
-   precisa ser precisa para o aluno. */
-const QUANDO = ['AGORA', 'DEPOIS', 'MAIS TARDE'];
-
 function renderRotina() {
   const lista = pegar('lista-rotina');
   lista.innerHTML = '';
@@ -308,24 +314,25 @@ function renderRotina() {
 
     const ehAgora = idx === idxAtual && !it.concluido;
 
+    const li = document.createElement('li');
     const linha = document.createElement('button');
     linha.className = 'item-rotina';
     if (it.concluido) linha.classList.add('feito');
     else if (ehAgora) linha.classList.add('agora');
 
     const marca = it.concluido ? '✓' : ehAgora ? '▶' : '○';
-    const quando = QUANDO[idx] || 'DEPOIS';
+    const quando = it.concluido ? 'FEITO' : ehAgora ? 'AGORA' : 'DEPOIS';
     linha.innerHTML =
-      '<span class="marca">' + marca + '</span>' +
+      '<span class="marca" aria-hidden="true">' + marca + '</span>' +
       '<span class="item-texto">' +
       '<span class="item-quando">' + quando + '</span>' +
       '<span class="item-materia">' + MATERIAS[item.materia] + '</span>' +
       '</span>';
 
-    if (!it.concluido) {
-      linha.addEventListener('click', () => abrirItem(it.itemId));
-    }
-    lista.appendChild(linha);
+    if (it.concluido) linha.disabled = true;
+    else linha.addEventListener('click', () => abrirItem(it.itemId));
+    li.appendChild(linha);
+    lista.appendChild(li);
   });
 
   renderProgresso();
@@ -353,6 +360,7 @@ function renderTarefa() {
   if (sessao.respostaErrada) {
     erro.textContent = 'Quase! Vamos ver juntos?';
     erro.hidden = false;
+    focar(erro); // o leitor de tela anuncia o acolhimento
   } else {
     erro.hidden = true;
   }
@@ -594,6 +602,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function irPara(tela) {
     sessao = null;
     mostrar(tela);
+    for (const [id, alvo] of [['btn-rotina', 'rotina'], ['btn-perfil', 'perfil']]) {
+      pegar(id).classList.toggle('ativa', tela === alvo);
+      pegar(id).setAttribute('aria-current', tela === alvo ? 'page' : 'false');
+    }
     if (tela === 'rotina') renderRotina();
     else if (tela === 'perfil') renderPerfil();
   }
