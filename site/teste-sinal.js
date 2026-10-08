@@ -340,6 +340,16 @@ conferir('16. só o item atual é marcado AGORA', rotulos.filter((h) => h.includ
 conferir('16. item concluído aparece como FEITO', noApp('dados.itens').every((it, i) => !it.concluido || rotulos[i].includes('FEITO')));
 conferir('17. falar() devolve false sem speechSynthesis (cai no texto)', noApp('falar("oi")') === false);
 
+console.log('\nMeus sentidos\n');
+const PADRAO = '{ som: true, vibracao: true, voz: false, festa: true }';
+noApp('dados.modoCalmo = false; dados.sentidos = ' + PADRAO);
+conferir('18. sentido() respeita o painel', noApp('sentido("som")') === true && noApp('sentido("voz")') === false);
+noApp('dados.modoCalmo = true');
+conferir('18. o Modo calmo desliga todos os sentidos', ['som', 'vibracao', 'voz', 'festa'].every((n) => noApp('sentido("' + n + '")') === false));
+noApp('dados.modoCalmo = false; dados.sentidos = undefined');
+conferir('19. dados antigos sem "sentidos" não quebram', noApp('som("acerto"); festa(); vibrar(10); sentido("som")') === false);
+noApp('dados.sentidos = ' + PADRAO);
+
 console.log('\n' + '-'.repeat(58));
 if (falhou === 0) {
   console.log('  ' + passou + ' verificações passaram. A tese do projeto está de pé.');

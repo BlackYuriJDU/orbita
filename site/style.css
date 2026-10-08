@@ -498,3 +498,14 @@ body.modo-calmo .enunciado { font-size: 1.6rem; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+/* --- Meus sentidos, confete e pulo do bonequinho --- */
+.sentidos { max-width: 42rem; margin: 0.75rem auto 0; padding: 0 1rem; }
+.sentidos summary { min-height: 2.75rem; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.sentidos label { display: flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; }
+.sentidos input { width: 1.35rem; height: 1.35rem; accent-color: var(--acento); }
+.sentidos-ajuda { margin: 0 0 0.5rem; color: var(--tinta-fraca); }
+.confete { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 20; }
+.confete i { position: absolute; top: -1rem; width: 0.6rem; height: 0.9rem; border-radius: 2px; animation: cair 1.4s ease-in forwards; }
+@keyframes cair { to { transform: translateY(110vh) rotate(540deg); opacity: 0.2; } }
+.boneco.pulo { animation: pulo 0.6s ease-out; }
+@keyframes pulo { 40% { transform: translateY(-0.6rem) scale(1.08); } }

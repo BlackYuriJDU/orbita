@@ -37,6 +37,15 @@
     </label>
   </header>
 
+  <details class="sentidos">
+    <summary>Meus sentidos</summary>
+    <p class="sentidos-ajuda">Escolha como o app avisa que você acertou. O Modo calmo desliga tudo de uma vez.</p>
+    <label><input type="checkbox" id="sent-som"> <span>Sons suaves</span></label>
+    <label><input type="checkbox" id="sent-vibracao"> <span>Vibração (Android)</span></label>
+    <label><input type="checkbox" id="sent-voz"> <span>Ler a pergunta em voz alta</span></label>
+    <label><input type="checkbox" id="sent-festa"> <span>Comemoração na tela</span></label>
+  </details>
+
   <main>
 
     <!-- Abre aqui, e não no laço de ajuda, porque a dor que já está
@@ -79,6 +88,7 @@
     <section id="tela-tarefa" class="tela tela-entrando" hidden>
       <p class="materia" id="txt-materia"></p>
       <h2 id="txt-enunciado" class="enunciado"></h2>
+      <button id="btn-ouvir" class="btn-secundario" hidden><span aria-hidden="true">🔊</span> Ouvir a pergunta</button>
 
       <div id="alternativas" class="alternativas"></div>
 
@@ -123,6 +133,7 @@
 
   <!-- O conteúdo vem ANTES da lógica: app.js depende de ITENS e AJUDAS. -->
   <script src="seed.js"></script>
+  <script src="efeitos.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
