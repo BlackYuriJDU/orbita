@@ -135,8 +135,8 @@ noApp(`
 
 /* --- 0. a rotina nasce do conteúdo, não do storage --- */
 noApp('abrirItem(ITENS[0].id);');   // item 0 = fração da pizza (Matemática)
-conferir('a rotina foi montada a partir do conteúdo (6 itens)',
-  noApp('dados.itens.length') === 6,
+conferir('a rotina foi montada a partir do conteúdo (9 itens)',
+  noApp('dados.itens.length') === 9,
   'veio ' + noApp('dados.itens.length'));
 
 /* --- 1. erra SEM ajuda --- */
@@ -201,7 +201,7 @@ conferir('5. por isso "passos" continua com exatamente 1 sinal, não 2',
 /* --- 6. o CONTENT nunca entra no estado do aluno --- */
 const chaves = noApp('Object.keys(dados).sort().join(",")');
 conferir('6. o estado do aluno não carrega o conteúdo (só referências)',
-  chaves === 'itens,modoCalmo,tentativas,versao',
+  chaves === 'itens,modoCalmo,tentativas,versao,xp',
   'chaves: ' + chaves);
 
 /* --- 7. a escalada: "ainda não entendi" sobe para "passos" --- */
@@ -276,8 +276,10 @@ conferir('11. o enunciado não é o vazio que ficava na tela',
 /* O segundo bug do mesmo tipo: ao acertar, o app voltava para a rotina sem
    chamar renderRotina(). O item não saía de "AGORA", a barra não andava, e
    para o aluno parecia que nada tinha acontecido. */
-const itensNaRotina = noApp('pegar("lista-rotina").filhos.length');
-noApp('abrirItem(ITENS[0].id); respondeu(true);');
+const itensNaRotina = noApp('dados.itens.length');
+/* Depois do acerto o aluno fica na pergunta e toca em Continuar, que redesenha a
+   rotina. Aqui chamamos renderRotina() direto; o botão é exercitado no teste de tela. */
+noApp('abrirItem(ITENS[0].id); respondeu(true); renderRotina();');
 conferir('12. ao acertar, o item fica concluído no estado',
   noApp('dados.itens[0].concluido') === true);
 conferir('12. e recebe a classe "feito" na tela',
@@ -349,6 +351,23 @@ conferir('18. o Modo calmo desliga todos os sentidos', ['som', 'vibracao', 'voz'
 noApp('dados.modoCalmo = false; dados.sentidos = undefined');
 conferir('19. dados antigos sem "sentidos" não quebram', noApp('som("acerto"); festa(); vibrar(10); sentido("som")') === false);
 noApp('dados.sentidos = ' + PADRAO);
+
+console.log('\nLições e XP\n');
+conferir('20. XP: acerto de primeira vale 10; depois de errar, 5 (nunca menos)', noApp('xpDoAcerto(0)') === 10 && noApp('xpDoAcerto(1)') === 5 && noApp('xpDoAcerto(9)') === 5);
+conferir('20. cada matéria tem 3 perguntas (lição)', noApp('["matematica","portugues","ciencias"].every(m => ITENS.filter(i => i.materia === m).length === 3)'));
+noApp('dados.itens = montarRotina(); dados.xp = 0; dados.modoCalmo = false');
+noApp('abrirItem("mat-fracao-pizza"); respondeu(false); respondeu(true)');
+conferir('21. errar antes de acertar: +5 XP', noApp('dados.xp') === 5, noApp('dados.xp'));
+conferir('21. depois de acertar a tela fica na pergunta com o resultado (não avança sozinha)', noApp('sessao !== null && sessao.resultado.ganho') === 5);
+noApp('abrirItem("mat-proporcao-bolo"); respondeu(true)');
+conferir('21. acerto de primeira: +10 XP', noApp('dados.xp') === 15, noApp('dados.xp'));
+conferir('21. lição ainda aberta: sem bônus', noApp('sessao.resultado.licao') === null);
+noApp('abrirItem("mat-desconto-camiseta"); respondeu(true)');
+conferir('21. fechar a lição: +10 +20 de bônus', noApp('dados.xp') === 45 && noApp('sessao.resultado.licao.materia') === 'matematica', noApp('dados.xp'));
+const xpAntes = noApp('dados.xp');
+noApp('abrirItem("por-aviso-celular"); respondeu(false); respondeu(false); respondeu(false)');
+conferir('22. errar nunca tira XP', noApp('dados.xp') === xpAntes);
+noApp('dados.itens = montarRotina(); dados.xp = 0; sessao = null');
 
 console.log('\n' + '-'.repeat(58));
 if (falhou === 0) {

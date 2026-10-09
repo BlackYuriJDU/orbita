@@ -75,6 +75,8 @@
         <span id="txt-progresso" class="progresso-txt">0%</span>
       </div>
 
+      <p id="txt-xp" class="xp"></p>
+
       <ul id="lista-rotina" class="rotina"></ul>
 
       <div class="rodape-acoes">
@@ -86,17 +88,27 @@
     <!-- Sem X vermelho. Sem buzina. Sem contagem de erros na tela. O objetivo
          desta tela não é medir o erro, é devolver o aluno à tarefa. -->
     <section id="tela-tarefa" class="tela tela-entrando" hidden>
+      <div class="licao">
+        <div class="progresso-trilho" aria-hidden="true"><div id="barra-licao" class="progresso-barra"></div></div>
+        <span id="txt-licao" class="progresso-txt"></span>
+      </div>
       <p class="materia" id="txt-materia"></p>
       <h2 id="txt-enunciado" class="enunciado"></h2>
       <button id="btn-ouvir" class="btn-secundario" hidden><span aria-hidden="true">🔊</span> Ouvir a pergunta</button>
 
       <div id="alternativas" class="alternativas"></div>
 
+      <div id="painel-resultado" class="painel-resultado" hidden>
+        <p id="txt-resultado" class="resultado-titulo"></p>
+        <p id="txt-xp-ganho" class="resultado-xp"></p>
+        <button id="btn-continuar" class="btn-continuar">Continuar</button>
+      </div>
+
       <p id="msg-erro" class="msg-erro" hidden>Quase! Vamos ver juntos?</p>
 
       <div id="painel-ajuda" class="painel-ajuda" hidden></div>
 
-      <div class="rodape-acoes">
+      <div id="rodape-tarefa" class="rodape-acoes">
         <button id="btn-dificil" class="btn-ajuda">Está difícil</button>
         <button id="btn-nao-entendi" class="btn-ajuda btn-escalonar" hidden>Ainda não entendi</button>
         <button id="btn-voltar" class="btn-secundario">Voltar para a rotina</button>
