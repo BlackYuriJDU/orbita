@@ -509,3 +509,16 @@ body.modo-calmo .enunciado { font-size: 1.6rem; }
 @keyframes cair { to { transform: translateY(110vh) rotate(540deg); opacity: 0.2; } }
 .boneco.pulo { animation: pulo 0.6s ease-out; }
 @keyframes pulo { 40% { transform: translateY(-0.6rem) scale(1.08); } }
+
+/* --- Lição, resultado e XP --- */
+.licao { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+.licao .progresso-trilho { flex: 1; }
+.xp { margin: -1rem 0 1.25rem; font-weight: 600; color: var(--tinta-fraca); }
+.xp::before { content: "★ "; }
+.alternativa.certa { border-color: var(--feito); background: var(--feito-claro); font-weight: 600; }
+.alternativa:disabled { cursor: default; color: inherit; }
+.painel-resultado { margin-top: 1.25rem; padding: 1.25rem; background: var(--feito-claro); border-left: 5px solid var(--feito); border-radius: var(--raio); animation: entrar 0.28s ease-out both; }
+.resultado-titulo { margin: 0; font-size: 1.35rem; font-weight: 700; }
+.resultado-xp { margin: 0.25rem 0 1rem; }
+.btn-continuar { width: 100%; min-height: 3.75rem; font: inherit; font-size: 1.15rem; font-weight: 700; color: #fff; background: var(--acento); border: 0; border-radius: var(--raio); cursor: pointer; }
+body.modo-calmo .xp { display: none; }

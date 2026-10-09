@@ -187,3 +187,12 @@ Isso é verdade: quem escreveu esta estrutura são as pessoas do time.
 - **Voz:** com "Ler a pergunta em voz alta" ligado, a pergunta é lida ao abrir e aparece o
   botão "Ouvir a pergunta" (isso NÃO conta como ajuda no perfil).
 - **Limite:** vibração só funciona em Android; no iPhone o app depende de som e tela.
+
+## Fase 3 — Lições, resultado e XP (branch `melhorias-fase-3`)
+
+- **Lições:** cada matéria é uma lição de 3 perguntas (entraram 3 perguntas novas: desconto, mas/mais
+  e fotossíntese — **revisar conteúdo com o professor**). A pergunta mostra "Pergunta 2 de 3" e uma barra.
+- **Resultado:** ao acertar, aparece o painel "Muito bem!" com o XP ganho e o botão **Continuar**.
+  Nada avança sozinho e não há cronômetro (importante para quem precisa de mais tempo).
+- **XP só sobe:** 10 por acerto de primeira, 5 depois de errar ou pedir ajuda, +20 ao fechar a lição.
+  Não há vidas nem perda de pontos. O Modo calmo esconde o XP.

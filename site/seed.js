@@ -68,6 +68,23 @@ const ITENS = [
     ],
   },
 
+  {
+    id: 'mat-desconto-camiseta',
+    materia: 'matematica',
+    enunciado: 'Uma camiseta custa R$ 40 e está com 25% de desconto. Quanto ela vai custar com o desconto?',
+    opcoes: ['R$ 10', 'R$ 35', 'R$ 30', 'R$ 25'],
+    gabarito: 2,
+    maisSimples:
+      '25% é a quarta parte (1/4). A quarta parte de 40 é 10. Tirando 10 de 40, sobram 30.',
+    exemplo:
+      'Divida R$ 40 em 4 partes iguais de R$ 10 e devolva uma parte para o cliente. Sobram 3 partes: R$ 30.',
+    passos: [
+      '25% é o mesmo que 1/4: uma de quatro partes iguais.',
+      'Um quarto de 40 é 10. Esse é o valor do desconto.',
+      'O preço final é 40 − 10 = 30. Resposta: R$ 30.',
+    ],
+  },
+
   // Português
   {
     id: 'por-aviso-celular',
@@ -106,6 +123,23 @@ const ITENS = [
       'Aqui o verbo "fazer" fala de tempo que passou: três anos.',
       'Nesse uso ele não muda: fica sempre "faz", mesmo com número maior que um.',
       'Por isso: "Faz três anos que eu moro aqui."',
+    ],
+  },
+
+  {
+    id: 'por-mas-mais',
+    materia: 'portugues',
+    enunciado: 'Complete a frase: "Eu queria sair, ___ estava chovendo."',
+    opcoes: ['mas', 'mais'],
+    gabarito: 0,
+    maisSimples:
+      '"Mas" mostra contraste: uma ideia vai contra a outra. "Mais" fala de quantidade. Aqui, querer sair e estar chovendo se contrariam.',
+    exemplo:
+      'Dá para trocar "mas" por "porém": "Eu queria sair, porém estava chovendo." Se a troca funciona, é "mas".',
+    passos: [
+      'Veja as duas ideias: querer sair e estar chovendo.',
+      'Elas se contrariam, então a frase pede uma palavra de contraste.',
+      'Teste: "porém" cabe na frase. Então é "mas".',
     ],
   },
 
@@ -148,6 +182,22 @@ const ITENS = [
       'Para a lâmpada acender, a corrente precisa dar a volta completa no circuito.',
       'Cortar o fio abriu um buraco nesse caminho.',
       'A corrente não consegue mais passar. Sem corrente, a lâmpada apaga.',
+    ],
+  },
+  {
+    id: 'cie-fotossintese',
+    materia: 'ciencias',
+    enunciado: 'Que gás as plantas absorvem do ar para fazer a fotossíntese?',
+    opcoes: ['Oxigênio', 'Gás carbônico', 'Nitrogênio'],
+    gabarito: 1,
+    maisSimples:
+      'As plantas usam a luz do Sol, água e gás carbônico para fabricar o próprio alimento. E soltam oxigênio no ar.',
+    exemplo:
+      'Pense numa cozinha: a luz do Sol é o fogão, a água e o gás carbônico são os ingredientes, e o oxigênio é o que sobra e a planta solta.',
+    passos: [
+      'A fotossíntese é a forma como a planta fabrica seu alimento.',
+      'Ela precisa de luz do Sol, de água e de um gás do ar: o gás carbônico.',
+      'No fim, solta oxigênio. Então o gás que ela absorve é o gás carbônico.',
     ],
   },
 ];

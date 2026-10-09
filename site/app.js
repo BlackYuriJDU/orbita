@@ -13,6 +13,7 @@ const CHAVE_NOME = 'orbita.nome.v1';
 let dados = {
   versao: 1,
   modoCalmo: false,
+  xp: 0,          // só sobe: cada acerto dá pontos, nenhum erro tira
   sentidos: { som: true, vibracao: true, voz: false, festa: true },
   itens: [],      // a rotina de hoje: { itemId, concluido }
   tentativas: [], // o log. Só cresce, nunca é reescrito.
@@ -111,6 +112,19 @@ function indiceDoItemAtual() {
   return idx === -1 ? dados.itens.length : idx;
 }
 
+/* Uma lição é uma matéria: as perguntas dela, na ordem da rotina. */
+function licaoDe(itemId) {
+  const materia = itemPorId(itemId).materia;
+  const ids = ITENS.filter((i) => i.materia === materia).map((i) => i.id);
+  const feitos = ids.filter((id) => dados.itens.some((x) => x.itemId === id && x.concluido)).length;
+  return { materia: materia, total: ids.length, feitos: feitos };
+}
+
+/* XP nunca diminui. Acertar de primeira vale 10; acertar depois de errar ou
+   pedir ajuda vale 5 — ajuda não é derrota. Fechar a lição dá 20 de bônus. */
+const XP_LICAO = 20;
+function xpDoAcerto(erradas) { return erradas === 0 ? 10 : 5; }
+
 function progresso() {
   if (!dados.itens.length) return 0;
   const feitos = dados.itens.filter((it) => it.concluido).length;
@@ -173,6 +187,8 @@ function abrirItem(itemId) {
     passoAtual: 0,     // até onde os passos foram revelados
     inicio: Date.now(),
     respondendo: false,
+    erradas: 0,        // respostas erradas nesta pergunta (só para o XP)
+    resultado: null,   // preenchido ao acertar: { ganho, licao }
   };
   mostrar('tarefa');
   renderTarefa();
@@ -256,18 +272,24 @@ function respondeu(correta) {
   if (correta) {
     const it = dados.itens.find((x) => x.itemId === sessao.itemId);
     if (it) it.concluido = true;
+    const ganho = xpDoAcerto(sessao.erradas);
+    const licao = licaoDe(sessao.itemId);
+    const fechou = licao.feitos === licao.total;
+    dados.xp = (dados.xp || 0) + ganho + (fechou ? XP_LICAO : 0);
     salvarDados();
-    sessao = null;
     vibrar([18, 45, 18]);
     som('acerto');
     festa();
-    mostrar('rotina');
-    renderRotina();
+    /* Fica na pergunta, mostrando o resultado. Quem decide quando seguir é o
+       aluno, no botão Continuar — nada avança sozinho nem tem cronômetro. */
+    sessao.resultado = { ganho: ganho, licao: fechou ? licao : null };
+    renderTarefa();
     return;
   }
 
   salvarDados();
   sessao.respondendo = false;
+  sessao.erradas++;
   errou(); // conta o erro e mostra o acolhimento
 }
 
@@ -313,6 +335,7 @@ function renderProgresso() {
   const pct = Math.round(progresso() * 100);
   barra.style.width = pct + '%';
   pegar('txt-progresso').textContent = pct + '%';
+  pegar('txt-xp').textContent = (dados.xp || 0) + ' XP';
 }
 
 function renderRotina() {
@@ -365,12 +388,26 @@ function renderTarefa() {
     const botao = document.createElement('button');
     botao.className = 'alternativa';
     botao.textContent = opcao;
+    botao.disabled = !!sessao.resultado;
+    if (sessao.resultado && idx === item.gabarito) botao.className += ' certa';
     botao.addEventListener('click', () => respondeu(idx === item.gabarito));
     caixa.appendChild(botao);
   });
 
+  const res = sessao.resultado;
+  const lic = licaoDe(item.id);
+  pegar('txt-licao').textContent = 'Pergunta ' + (res ? lic.feitos : lic.feitos + 1) + ' de ' + lic.total;
+  pegar('barra-licao').style.width = Math.round((lic.feitos / lic.total) * 100) + '%';
+  pegar('painel-resultado').hidden = !res;
+  pegar('rodape-tarefa').hidden = !!res;
+  if (res) {
+    pegar('txt-resultado').textContent = res.licao ? 'Lição de ' + MATERIAS[res.licao.materia] + ' concluída!' : 'Muito bem!';
+    pegar('txt-xp-ganho').textContent = '+' + res.ganho + ' XP' + (res.licao ? ' e +' + XP_LICAO + ' pela lição' : '');
+    pegar('btn-continuar').focus(); // o leitor de tela anuncia o resultado
+  }
+
   const erro = pegar('msg-erro');
-  if (sessao.respostaErrada) {
+  if (sessao.respostaErrada && !res) {
     erro.textContent = 'Quase! Vamos ver juntos?';
     erro.hidden = false;
     focar(erro); // o leitor de tela anuncia o acolhimento
@@ -385,7 +422,7 @@ function renderTarefa() {
   const painel = pegar('painel-ajuda');
   painel.innerHTML = '';
 
-  if (sessao.ajudaAtiva) {
+  if (sessao.ajudaAtiva && !res) {
     painel.hidden = false;
     painel.appendChild(ajudaAtivaHTML(item));
   } else {
@@ -623,6 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else festa();
     });
   }
+  pegar('btn-continuar').addEventListener('click', () => irPara('rotina'));
   pegar('btn-ouvir').addEventListener('click', () => {
     if (sessao) falar(itemPorId(sessao.itemId).enunciado);
   });
