@@ -1,49 +1,33 @@
-/* ÓRBITA — a folha de estilo.
-   Os comentários dizem POR QUÊ, não o quê — se você só quer saber o que a
-   regra faz, o nome da classe já diz.
+/* ÓRBITA — identidade geométrica pop, com estímulos sob controle.
+   A cor indica hierarquia e estado; não substitui texto ou ícones. As opções
+   sensoriais continuam sendo do estudante, e movimento decorativo pode ser
+   reduzido sem esconder o conteúdo necessário para aprender. */
 
-   TRÊS REGRAS QUE NÃO SE NEGOCIAM:
-
-   Nada que pisque. Sem contagem regressiva, sem badge pulsando, sem "você
-   está perdendo". Para estudantes TEA, hiperestímulo visual é exatamente o
-   modo de falha que este app existe para reduzir. Gamificação aqui não é
-   escopo demais — é contraproducente.
-
-   Alvo de toque grande: nenhum botão abaixo de 56px de altura.
-
-   O texto sobrevive a 200% de zoom. Acessibilidade é o argumento do projeto,
-   então precisa ser verdade, não discurso.
-
-   E UMA REGRA SOBRE MOVIMENTO: o boneco respira e o conteúdo entra com
-   suavidade, porque tela morta não comunica acolhimento. Nenhuma animação
-   pisca, conta nem muda de cor sozinho. E o Modo Calmo zera todas elas —
-   o aluno escolhe, não a gente. */
-
+/* Tokens da identidade visual */
 :root {
-  /* Paleta de baixo estímulo. Medida com o verificador WCAG, não no olho:
-     tinta sobre papel = 9.95:1 (AAA); gelo e creme sobre papel ficam abaixo de
-     3:1 e por isso são só superfície — nunca texto, nunca borda que signifique
-     algo. */
-  --tinta: #2f4156;      /* texto, borda forte */
-  --tinta-fraca: #4a6a7a; /* texto secundário — 4.94:1 no pior fundo (AA) */
-  --linha: #c8d9e6;      /* divisória, campo, estado de foco */
-  --papel: #f6fafd;      /* fundo geral */
-  --creme: #f5efeb;      /* superfície alternativa (dá pra separar do papel) */
+  --tinta: #171717;
+  --tinta-fraca: #353535;
+  --linha: #262626;
+  --papel: #F2E8D5;
+  --creme: #F2E8D5;
+  --superficie: #fff8ec;
 
-  /* O acento marca só uma coisa na tela: o que fazer AGORA. */
-  --acento: #2f4156;
-  --acento-claro: #e8eef4;
-  --feito: #567c8d;
-  --feito-claro: #eaf1f5;
+  --laranja: #FF7A1A;
+  --neon: #E9FF3D;
+  --petroleo: #0E7C86;
+  --roxo: #7B2FF7;
+  --magenta: #E4137A;
 
-  /* Erro NÃO é vermelho. Nesta tela não existe "errado" — existe "ainda não".
-     A cor de acolhimento é a mesma família do resto do sistema. */
-  --acolhimento: #2f4156;
-  --acolhimento-claro: #e8eef4;
+  --acento: var(--laranja);
+  --acento-claro: var(--neon);
+  --feito: var(--petroleo);
+  --feito-claro: #dcefeb;
+  --acolhimento: var(--roxo);
+  --acolhimento-claro: #eee5ff;
 
-  --raio: 14px;
+  --raio: 1.1rem;
   --linha-alt: 56px;
-  --movimento: 1; /* o Modo Calmo põe isto em 0 e tudo congela */
+  --movimento: 1;
 }
 
 * { box-sizing: border-box; }
@@ -522,3 +506,405 @@ body.modo-calmo .enunciado { font-size: 1.6rem; }
 .resultado-xp { margin: 0.25rem 0 1rem; }
 .btn-continuar { width: 100%; min-height: 3.75rem; font: inherit; font-size: 1.15rem; font-weight: 700; color: #fff; background: var(--acento); border: 0; border-radius: var(--raio); cursor: pointer; }
 body.modo-calmo .xp { display: none; }
+
+
+/* -------------------------------------------------------------------------
+   Identidade visual ÓRBITA — formas fortes, cor sólida e leitura primeiro.
+   ------------------------------------------------------------------------- */
+html { scroll-behavior: auto; }
+body {
+  color: var(--tinta);
+  background-color: var(--papel);
+  background-image: radial-gradient(rgba(23, 23, 23, 0.075) 0.7px, transparent 0.7px);
+  background-size: 18px 18px;
+}
+.topo {
+  display: grid;
+  grid-template-columns: auto auto minmax(12rem, 1fr) auto;
+  grid-template-areas: "logo marca nav calmo";
+  align-items: center;
+  gap: 0.75rem 1.1rem;
+  padding: 0.8rem clamp(0.85rem, 3vw, 1.75rem);
+  background: var(--tinta);
+  color: var(--papel);
+  border-bottom: 6px solid var(--neon);
+  box-shadow: 0 4px 0 rgba(23, 23, 23, 0.08);
+}
+.boneco { grid-area: logo; width: 2.65rem; height: 2.65rem; }
+.boneco .anel { stroke: var(--neon); stroke-width: 2.2; }
+.boneco .orbita-traco {
+  fill: none;
+  stroke: var(--magenta);
+  stroke-width: 1.8;
+}
+.boneco .orbita-ponto { fill: var(--laranja); stroke: var(--tinta); stroke-width: 1; }
+.boneco .corpo { stroke: var(--papel); stroke-width: 2.6; }
+.boneco .cabeca { fill: var(--laranja); stroke: var(--tinta); stroke-width: 0.6; }
+.topo .marca {
+  grid-area: marca;
+  color: var(--papel);
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  letter-spacing: 0.15em;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.abas {
+  grid-area: nav;
+  justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-left: 0;
+}
+.aba {
+  min-height: 48px;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid #77716a;
+  border-radius: 0.85rem;
+  background: #282828;
+  color: var(--papel);
+  font-size: 0.93rem;
+  font-weight: 650;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+.aba.ativa {
+  background: var(--neon);
+  border-color: var(--neon);
+  color: var(--tinta);
+  box-shadow: 3px 3px 0 var(--magenta);
+}
+.calmo {
+  grid-area: calmo;
+  justify-self: end;
+  color: var(--papel);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.calmo input, .sentidos input { accent-color: var(--neon); }
+
+.sentidos {
+  max-width: 51rem;
+  margin: 0.9rem auto 0;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--tinta);
+  border-radius: 1rem;
+  background: var(--superficie);
+  box-shadow: 3px 3px 0 var(--tinta);
+}
+.sentidos summary {
+  min-height: 2.6rem;
+  font-weight: 800;
+}
+.sentidos label { gap: 0.65rem; min-height: 2.7rem; }
+.sentidos-ajuda { color: var(--tinta-fraca); }
+
+main { padding: 0 1rem; }
+.tela {
+  position: relative;
+  max-width: 51rem;
+  margin: 1.5rem auto 2.5rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 3px solid var(--tinta);
+  border-radius: 1.45rem;
+  background: var(--superficie);
+  box-shadow: 8px 8px 0 var(--tinta);
+}
+.tela h2 {
+  margin-bottom: 0.8rem;
+  font-size: clamp(1.55rem, 4.5vw, 2.15rem);
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+  font-weight: 850;
+}
+.tela h2::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 0.48rem;
+  margin-bottom: 0.75rem;
+  border: 2px solid var(--tinta);
+  border-radius: 999px;
+  background: var(--laranja);
+  box-shadow: 5px 0 0 var(--neon), 10px 0 0 var(--magenta);
+}
+.lead { color: var(--tinta-fraca); max-width: 42rem; }
+.progresso { gap: 0.85rem; }
+.progresso-trilho {
+  height: 14px;
+  background: var(--superficie);
+  border: 2px solid var(--tinta);
+  border-radius: 999px;
+}
+.progresso-barra {
+  background: var(--neon);
+  border-right: 2px solid var(--tinta);
+}
+.progresso-txt {
+  color: var(--tinta);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.item-rotina {
+  min-height: 5rem;
+  padding: 0.95rem 1.1rem;
+  border: 2px solid var(--tinta);
+  border-radius: 1rem;
+  background: var(--superficie);
+  box-shadow: 4px 4px 0 var(--tinta);
+}
+.item-rotina.agora {
+  background: var(--neon);
+  border-color: var(--tinta);
+  border-width: 2px;
+  box-shadow: 5px 5px 0 var(--laranja);
+}
+.item-rotina.feito {
+  background: var(--feito-claro);
+  border-color: var(--tinta);
+  box-shadow: 3px 3px 0 var(--petroleo);
+}
+.item-rotina .marca { color: var(--tinta); }
+.item-rotina.agora .item-quando { color: var(--tinta); }
+.item-quando { letter-spacing: 0.08em; }
+.item-materia { font-weight: 750; }
+.materia {
+  display: inline-block;
+  margin-bottom: 0.65rem;
+  padding: 0.3rem 0.65rem;
+  border: 2px solid var(--tinta);
+  border-radius: 999px;
+  background: var(--laranja);
+  color: var(--tinta);
+  box-shadow: 3px 3px 0 var(--magenta);
+  font-size: 0.8rem;
+  letter-spacing: 0.07em;
+}
+.enunciado { font-size: clamp(1.3rem, 3.5vw, 1.7rem); font-weight: 800; }
+.alternativas { gap: 0.9rem; }
+.alternativa {
+  min-height: 3.75rem;
+  border: 2px solid var(--tinta);
+  border-radius: 1rem;
+  background: var(--superficie);
+  box-shadow: 4px 4px 0 var(--tinta);
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+.alternativa:nth-child(3n + 1) { border-left: 8px solid var(--laranja); }
+.alternativa:nth-child(3n + 2) { border-left: 8px solid var(--roxo); }
+.alternativa:nth-child(3n) { border-left: 8px solid var(--magenta); }
+.alternativa:hover:not(:disabled) { background: var(--neon); }
+.alternativa:active:not(:disabled) { box-shadow: 1px 1px 0 var(--tinta); }
+.alternativa.certa {
+  background: var(--feito-claro);
+  border-color: var(--tinta);
+  box-shadow: 4px 4px 0 var(--petroleo);
+}
+.msg-erro, .aviso-sem-voz {
+  background: var(--acolhimento-claro);
+  border: 2px solid var(--tinta);
+  border-left: 8px solid var(--roxo);
+  border-radius: 1rem;
+}
+.painel-ajuda {
+  background: #f3edff;
+  border: 2px solid var(--tinta);
+  box-shadow: 5px 5px 0 var(--roxo);
+  border-radius: 1rem;
+}
+.ajuda-titulo { color: var(--tinta); }
+.passos { padding-left: 1.55rem; }
+.passos li { padding-left: 0.25rem; }
+.passo-fim { color: var(--tinta-fraca); }
+
+.btn-ajuda, .btn-continuar {
+  min-height: 56px;
+  border: 2px solid var(--tinta);
+  border-radius: 0.95rem;
+  background: var(--laranja);
+  color: var(--tinta);
+  box-shadow: 4px 4px 0 var(--tinta);
+  font-weight: 800;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+.btn-ajuda:hover { background: var(--neon); }
+.btn-ajuda:active, .btn-continuar:active {
+  box-shadow: 1px 1px 0 var(--tinta);
+}
+.btn-escalonar {
+  background: var(--neon);
+  border: 2px dashed var(--tinta);
+  color: var(--tinta);
+}
+.btn-escalonar:hover { background: var(--laranja); }
+.btn-secundario {
+  min-height: 56px;
+  padding: 0.65rem 1rem;
+  border: 2px solid var(--tinta);
+  border-radius: 0.95rem;
+  background: var(--superficie);
+  color: var(--tinta);
+  box-shadow: 3px 3px 0 var(--tinta);
+  font-weight: 700;
+}
+.btn-secundario:hover { background: var(--neon); }
+.rodape-acoes { gap: 0.85rem; margin-top: 2rem; }
+.rodape-acoes > button { max-width: 100%; }
+
+.form-nome { max-width: 30rem; }
+.campo-nome {
+  border: 2px solid var(--tinta);
+  border-radius: 0.95rem;
+  background: var(--papel);
+}
+.campo-nome:focus { border-color: var(--roxo); }
+
+.xp {
+  display: table;
+  margin: 0 0 1.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 2px solid var(--tinta);
+  border-radius: 999px;
+  background: var(--laranja);
+  color: var(--tinta);
+  font-weight: 850;
+}
+.xp::before { content: "✦ "; }
+.painel-resultado {
+  background: var(--neon);
+  border: 2px solid var(--tinta);
+  border-radius: 1rem;
+  border-left-width: 2px;
+  box-shadow: 5px 5px 0 var(--petroleo);
+}
+.btn-continuar { width: 100%; }
+.placar { gap: 1rem; }
+.placar-linha {
+  grid-template-columns: minmax(7rem, 0.9fr) minmax(4rem, 1.4fr) minmax(4.4rem, auto);
+  gap: 0.7rem;
+}
+.placar-nome { color: var(--tinta); font-weight: 700; }
+.placar-barra {
+  background: var(--papel);
+  border: 2px solid var(--tinta);
+  height: 14px;
+}
+.placar-barra span { background: var(--petroleo); border-right: 1px solid var(--tinta); }
+.placar-num { color: var(--tinta); font-weight: 750; }
+.chip {
+  background: var(--neon);
+  border: 2px solid var(--tinta);
+  color: var(--tinta);
+  font-weight: 700;
+}
+.perfil-nota {
+  margin: 0 0 1.4rem;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--tinta);
+  border-left: 8px solid var(--roxo);
+  border-radius: 0.9rem;
+  background: var(--acolhimento-claro);
+  color: var(--tinta);
+}
+.perfil-fecho {
+  border-top: 2px solid var(--tinta);
+  color: var(--tinta-fraca);
+}
+.vazio { color: var(--tinta-fraca); }
+
+.confete { z-index: 30; }
+.confete i {
+  top: -1.25rem;
+  width: 0.72rem;
+  height: 0.85rem;
+  border: 1.5px solid var(--tinta);
+  border-radius: 2px;
+  animation: cair 1.25s ease-in forwards;
+}
+.confete i.forma-circulo { border-radius: 50%; }
+.confete i.forma-losango { transform: rotate(45deg); border-radius: 0; }
+.confete i.forma-roseta { clip-path: polygon(50% 0, 62% 34%, 100% 20%, 74% 50%, 100% 80%, 62% 66%, 50% 100%, 38% 66%, 0 80%, 26% 50%, 0 20%, 38% 34%); }
+.confete i.forma-bloco { width: 0.9rem; height: 0.55rem; border-radius: 0; }
+@keyframes cair { to { transform: translateY(108vh) rotate(360deg); opacity: 0.12; } }
+.boneco.pulo { animation: pulo 0.4s ease-out; }
+
+.rodape-site {
+  padding: 1.5rem 1rem;
+  color: var(--tinta-fraca);
+  border-top: 2px solid var(--tinta);
+  background: var(--papel);
+}
+:focus-visible {
+  outline: 4px solid var(--roxo);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 2px var(--superficie);
+}
+button:disabled { opacity: 0.78; }
+
+@media (min-width: 980px) {
+  .tela { margin-top: 2rem; margin-bottom: 3rem; }
+  .sentidos { margin-top: 1rem; }
+}
+@media (max-width: 760px) {
+  .topo {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "logo marca calmo" "nav nav nav";
+    gap: 0.7rem;
+    padding: 0.75rem 1rem;
+  }
+  .topo .marca { font-size: 1.2rem; }
+  .abas { width: 100%; justify-self: stretch; }
+  .aba { flex: 1; padding: 0.55rem 0.6rem; }
+  .calmo { font-size: 0.88rem; }
+  .sentidos { margin-left: 0.9rem; margin-right: 0.9rem; }
+  main { padding: 0 0.9rem; }
+  .tela { margin: 1.15rem auto 2rem; box-shadow: 5px 5px 0 var(--tinta); }
+  .placar-linha {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.4rem 0.75rem;
+  }
+  .placar-nome { min-width: 0; overflow-wrap: anywhere; }
+  .placar-barra { grid-column: 1; grid-row: 2; width: 100%; }
+  .placar-num { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+}
+@media (max-width: 380px) {
+  html { font-size: 17px; }
+  .topo { padding: 0.65rem 0.75rem; gap: 0.6rem; }
+  .boneco { width: 2.3rem; height: 2.3rem; }
+  .topo .marca { font-size: 1.05rem; letter-spacing: 0.11em; }
+  .calmo { font-size: 0.82rem; gap: 0.3rem; }
+  .calmo input { width: 1.1rem; height: 1.1rem; }
+  main { padding: 0 0.7rem; }
+  .tela { padding: 1.1rem; border-radius: 1rem; }
+  .enunciado { font-size: 1.3rem; }
+  .item-rotina { gap: 0.65rem; padding: 0.8rem; }
+  .rodape-acoes { flex-direction: column; }
+  .rodape-acoes > button { width: 100%; }
+  .sentidos { margin-left: 0.7rem; margin-right: 0.7rem; padding: 0.55rem 0.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .aba, .alternativa, .btn-ajuda { transition: none !important; }
+  .confete, .boneco.pulo { display: none !important; }
+}
+
+/* O Modo Calmo remove a decoração em movimento, não as instruções. */
+body.modo-calmo .lead,
+body.modo-calmo .item-quando,
+body.modo-calmo .materia,
+body.modo-calmo .rodape-site {
+  display: initial;
+}
+body.modo-calmo .lead { font-size: 0.98rem; margin-bottom: 1.1rem; }
+body.modo-calmo .rotulo-nome { display: block; }
+body.modo-calmo .materia { display: inline-block; }
+body.modo-calmo .rodape-site { display: block; }
+body.modo-calmo .item-quando { letter-spacing: 0.03em; font-size: 0.82rem; }
+body.modo-calmo .painel-resultado {
+  background: var(--feito-claro);
+  box-shadow: none;
+  animation: none;
+}
+body.modo-calmo .confete { display: none !important; }

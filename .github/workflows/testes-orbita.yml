@@ -1,0 +1,65 @@
+name: Testes do ÓRBITA
+
+on:
+  push:
+    branches:
+      - 'feat/orbita-identidade-visual-20261014'
+    paths:
+      - 'site/**'
+      - '.github/workflows/testes-orbita.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - '.github/workflows/testes-orbita.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    name: Sintaxe e testes de lógica
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verificar sintaxe JavaScript
+        working-directory: site
+        run: |
+          node --check app.js
+          node --check efeitos.js
+          node --check teste-sinal.js
+          node --check seed.js
+
+      - name: Verificar tokens e estrutura CSS
+        working-directory: site
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const css = fs.readFileSync('style.css', 'utf8');
+          const required = [
+            ':root {',
+            '--tinta:',
+            '#FF7A1A',
+            '#E9FF3D',
+            '@media (max-width: 380px)',
+            'body.modo-calmo .rotulo-nome'
+          ];
+          for (const token of required) {
+            if (!css.includes(token)) throw new Error('CSS sem o requisito: ' + token);
+          }
+          const abertas = css.split('{').length - 1;
+          const fechadas = css.split('}').length - 1;
+          if (abertas !== fechadas) throw new Error('Chaves CSS desbalanceadas: ' + abertas + '/' + fechadas);
+          console.log('CSS: tokens principais presentes; ' + abertas + ' blocos balanceados.');
+          NODE
+
+      - name: Executar testes da aplicação
+        working-directory: site
+        run: node teste-sinal.js

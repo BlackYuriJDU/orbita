@@ -164,12 +164,21 @@ function derivarPerfil() {
     melhorPorMateria[materia] = melhor;
   }
 
-  let maisUsada = null, maxUsos = -1;
+  /* "Mais usada" não significa "funcionou melhor". Comparamos a proporção
+     de acertos de primeira dentro dos registros de cada representação. Só
+     apontamos uma melhor quando existe pelo menos um sinal positivo. */
+  let maisEficaz = null, maiorTaxa = 0, maiorAmostra = -1;
   for (const ajuda in acertos) {
-    if (acertos[ajuda].total > maxUsos) { maxUsos = acertos[ajuda].total; maisUsada = ajuda; }
+    const { dentro, total } = acertos[ajuda];
+    const taxa = total ? dentro / total : 0;
+    if (dentro > 0 && (taxa > maiorTaxa || (taxa === maiorTaxa && total > maiorAmostra))) {
+      maiorTaxa = taxa;
+      maiorAmostra = total;
+      maisEficaz = ajuda;
+    }
   }
 
-  return { acertos, melhorPorMateria, maisUsada, total: dados.tentativas.length };
+  return { acertos, melhorPorMateria, maisEficaz, total: dados.tentativas.length };
 }
 
 /* O laço de ajuda. O aluno trava; a tela NÃO mostra um X vermelho nem apita.
@@ -535,12 +544,19 @@ function renderPerfil() {
     return;
   }
 
-  if (p.maisUsada) {
+  if (p.maisEficaz) {
     const titulo = document.createElement('h2');
     titulo.className = 'perfil-titulo';
-    titulo.textContent = 'Com você, funcionou mais: ' + ajudaPorId(p.maisUsada).curto;
+    titulo.textContent = 'Maior taxa de acerto de primeira: ' + ajudaPorId(p.maisEficaz).curto;
     corpo.appendChild(titulo);
   }
+
+  const nota = document.createElement('p');
+  nota.className = 'perfil-nota';
+  nota.textContent = p.maisEficaz
+    ? 'A comparação usa os registros atuais de cada ajuda. É um sinal do seu histórico, não uma regra fixa sobre você.'
+    : 'Ainda não há acertos de primeira registrados depois de pedir ajuda. Continue experimentando os caminhos disponíveis.';
+  corpo.appendChild(nota);
 
   const tabela = document.createElement('div');
   tabela.className = 'placar';
