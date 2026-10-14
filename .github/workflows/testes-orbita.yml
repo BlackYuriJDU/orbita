@@ -54,8 +54,8 @@ jobs:
           for (const token of required) {
             if (!css.includes(token)) throw new Error('CSS sem o requisito: ' + token);
           }
-          const abertas = (css.match(/\\{/g) || []).length;
-          const fechadas = (css.match(/\\}/g) || []).length;
+          const abertas = css.split('{').length - 1;
+          const fechadas = css.split('}').length - 1;
           if (abertas !== fechadas) throw new Error('Chaves CSS desbalanceadas: ' + abertas + '/' + fechadas);
           console.log('CSS: tokens principais presentes; ' + abertas + ' blocos balanceados.');
           NODE
