@@ -647,8 +647,9 @@ main { padding: 0 1rem; }
   padding: 0.3rem 0.65rem;
   border: 2px solid var(--tinta);
   border-radius: 999px;
-  background: var(--magenta);
+  background: var(--laranja);
   color: var(--tinta);
+  box-shadow: 3px 3px 0 var(--magenta);
   font-size: 0.8rem;
   letter-spacing: 0.07em;
 }
@@ -870,6 +871,7 @@ body.modo-calmo .rodape-site {
   display: initial;
 }
 body.modo-calmo .lead { font-size: 0.98rem; margin-bottom: 1.1rem; }
+body.modo-calmo .rotulo-nome { display: block; }
 body.modo-calmo .materia { display: inline-block; }
 body.modo-calmo .rodape-site { display: block; }
 body.modo-calmo .item-quando { letter-spacing: 0.03em; font-size: 0.82rem; }
