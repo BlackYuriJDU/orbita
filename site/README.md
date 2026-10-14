@@ -51,7 +51,7 @@ Esperado: **todas as verificações passando** (a contagem aparece no final do t
 ```
 index.html          as 4 telas e o boneco
 style.css           a folha de estilo — cada decisão tem um motivo, escrito no arquivo
-seed.js             O CONTEÚDO: 6 itens × 4 representações autorais
+seed.js             O CONTEÚDO: 9 itens × 4 representações autorais
 app.js              A LÓGICA: estado, laço de ajuda, perfil derivado
 teste-sinal.js      a prova de que a tese funciona
 ```
@@ -75,7 +75,7 @@ por **três pessoas** — e duas delas não programam. Em JavaScript, dá.
 
 | Decisão | Por quê |
 |---|---|
-| Sem gamificação (confete, XP, sequência) | Para estudantes TEA, hiperestímulo visual é exatamente o modo de falha que o app existe para reduzir. Não é escopo demais: é contraproducente. |
+| Sem punição, cronômetro ou perda de pontos | XP e comemoração são complementos opcionais; o Modo Calmo desliga os estímulos opcionais. Erros recebem acolhimento e o aluno controla quando avançar. |
 | Errar não mostra X vermelho | O objetivo da tela não é medir o erro, é devolver o aluno à tarefa. |
 | "Ainda não entendi" é escalonamento, não representação | Ele **sobe um degrau** em vez de oferecer uma quinta explicação. Por isso não entra no perfil: se contasse, o perfil diria "funcionou: você não entendeu". |
 | A escada é `mais simples → exemplo → em passos` | Um degrau por vez. A versão anterior pulava direto para o fim com um `return 'passos'` que fingia ser degrau. |
@@ -100,19 +100,24 @@ a marca e o personagem principal. Duas escolhas deliberadas:
 O boneco é SVG inline no `index.html`, desenhado com 48×48 e escalado por CSS — sem imagem
 externa, sem requisição, sem dependência.
 
-## A paleta foi medida, não escolhida no olho
+## Identidade visual e contraste
 
-Rodando o cálculo de contraste WCAG (`contraste.js`, na raiz do repositório):
+A identidade visual usa seis cores extraídas das referências de design do projeto:
+laranja `#FF7A1A`, creme `#F2E8D5`, verde-neon `#E9FF3D`, azul-petróleo
+`#0E7C86`, roxo `#7B2FF7` e magenta `#E4137A`.
 
-| Cor | Sobre `#F6FAFD` | Uso |
+| Cor | Uso principal | Regra de leitura |
 |---|---|---|
-| `#2F4156` | **9.95:1 — AAA** | texto, borda forte, acento |
-| `#567C8D` | 4.29:1 | texto secundário e placar — só corpo grande |
-| `#C8D9E6` | 1.38:1 | **só superfície.** Nunca texto, nunca borda que signifique algo |
-| `#F5EFEB` | 1.09:1 | **só superfície.** Idêntico ao papel de verdade — não separa nada |
+| `#F2E8D5` — creme | Fundo e superfícies | Texto escuro |
+| `#FF7A1A` — laranja | Ação principal | Texto escuro, nunca branco |
+| `#E9FF3D` — neon | Item atual, progresso e foco visual | Texto escuro |
+| `#0E7C86` — azul-petróleo | Progresso concluído e detalhes decorativos | Evitar como texto pequeno sobre creme sem medir a combinação |
+| `#7B2FF7` — roxo | Ajuda e foco de teclado | Preferir texto escuro em superfícies claras |
+| `#E4137A` — magenta | Formas e detalhes decorativos | Não usar como texto normal sem uma combinação de contraste validada |
 
-Os dois claros do fim são decorativos. Isso é proposital: eles dão respiro entre blocos sem
-criar uma hierarquia que o aluno precise decodificar.
+A cor não substitui rótulos, contornos ou mensagens. As alternativas mantêm textos explícitos,
+borda visível e foco de teclado. A camada de confetes é curta e usa formas geométricas; o
+Modo Calmo mantém o enunciado, a matéria, as instruções e o rodapé, reduzindo a decoração.
 
 ## Publicar (grátis, ~5 minutos)
 
@@ -196,3 +201,20 @@ Isso é verdade: quem escreveu esta estrutura são as pessoas do time.
   Nada avança sozinho e não há cronômetro (importante para quem precisa de mais tempo).
 - **XP só sobe:** 10 por acerto de primeira, 5 depois de errar ou pedir ajuda, +20 ao fechar a lição.
   Não há vidas nem perda de pontos. O Modo calmo esconde o XP.
+
+
+## Redesign visual — branch `feat/orbita-identidade-visual-20261014`
+
+Esta versão de trabalho aplica a paleta geométrica, redesenha os cartões e os controles,
+melhora o layout para celular (incluindo o placar do perfil), atualiza os confetes e corrige
+a frase de destaque do perfil: a comparação usa a taxa de acerto na primeira tentativa,
+não simplesmente a quantidade de vezes que uma ajuda foi usada.
+
+O ranking é descritivo, não um diagnóstico nem prova de causalidade. Quando ainda não existe
+um acerto de primeira depois da ajuda, a tela informa isso em vez de escolher uma opção sem
+evidência positiva.
+
+As alterações ficam numa branch separada até revisão. A equipe deve executar
+`node teste-sinal.js`, testar os fluxos num navegador e validar a experiência com estudantes
+e educadores antes de decidir se a versão deve ser publicada. O uso de IA deve continuar
+declarado de acordo com o regulamento da maratona.
