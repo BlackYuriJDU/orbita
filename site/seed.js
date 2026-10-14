@@ -28,7 +28,7 @@ const AJUDAS = [
   { id: 'naoEntendi', rotulo: 'Ainda não entendi', curto: 'não entendi', escalonamento: true },
 ];
 
-/* Os 6 itens da rotina. Dois de cada matéria, cada um com as TRÊS
+/* Os 9 itens da rotina. Três de cada matéria, cada um com as TRÊS
    representações escritas à mão (mais simples · exemplo · em passos). A
    quarta, "ouvir", não precisa de texto: é o enunciado lido em voz alta pelo
    navegador. */
