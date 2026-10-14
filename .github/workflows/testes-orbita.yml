@@ -37,6 +37,29 @@ jobs:
           node --check teste-sinal.js
           node --check seed.js
 
+      - name: Verificar tokens e estrutura CSS
+        working-directory: site
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const css = fs.readFileSync('style.css', 'utf8');
+          const required = [
+            ':root {',
+            '--tinta:',
+            '#FF7A1A',
+            '#E9FF3D',
+            '@media (max-width: 380px)',
+            'body.modo-calmo .rotulo-nome'
+          ];
+          for (const token of required) {
+            if (!css.includes(token)) throw new Error('CSS sem o requisito: ' + token);
+          }
+          const abertas = (css.match(/\\{/g) || []).length;
+          const fechadas = (css.match(/\\}/g) || []).length;
+          if (abertas !== fechadas) throw new Error('Chaves CSS desbalanceadas: ' + abertas + '/' + fechadas);
+          console.log('CSS: tokens principais presentes; ' + abertas + ' blocos balanceados.');
+          NODE
+
       - name: Executar testes da aplicação
         working-directory: site
         run: node teste-sinal.js
