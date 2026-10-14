@@ -176,6 +176,37 @@ conferir('4. e conta 1 acerto de primeira sob "passos"',
   perfil.acertos.passos && perfil.acertos.passos.dentro === 1,
   JSON.stringify(perfil.acertos));
 
+/* A representação mais usada não é necessariamente a de melhor resultado.
+   Este caso impede que frequência seja apresentada como eficácia. */
+const rankingPerfil = noApp(`(function () {
+  const historicoAnterior = dados.tentativas;
+  dados.tentativas = [
+    { ajudaUsada: 'passos', materia: 'matematica', acertou: false, tentativasAteAcertar: 1 },
+    { ajudaUsada: 'passos', materia: 'matematica', acertou: false, tentativasAteAcertar: 2 },
+    { ajudaUsada: 'passos', materia: 'matematica', acertou: true, tentativasAteAcertar: 1 },
+    { ajudaUsada: 'exemplo', materia: 'portugues', acertou: true, tentativasAteAcertar: 1 }
+  ];
+  const resultado = derivarPerfil().maisEficaz;
+  dados.tentativas = historicoAnterior;
+  return resultado;
+})()`);
+conferir('4. o perfil compara a taxa de acerto, não escolhe a ajuda mais usada',
+  rankingPerfil === 'exemplo',
+  'veio ' + rankingPerfil);
+
+const semSinalPositivo = noApp(`(function () {
+  const historicoAnterior = dados.tentativas;
+  dados.tentativas = [
+    { ajudaUsada: 'passos', materia: 'matematica', acertou: false, tentativasAteAcertar: 1 }
+  ];
+  const resultado = derivarPerfil().maisEficaz;
+  dados.tentativas = historicoAnterior;
+  return resultado;
+})()`);
+conferir('4. o perfil não proclama uma melhor ajuda sem acerto de primeira',
+  semSinalPositivo === null,
+  'veio ' + semSinalPositivo);
+
 /* --- 5. CONTRA-TESTE: errar DEPOIS da ajuda não gera sinal --- */
 noApp(`
   abrirItem(ITENS[1].id);          // proporção do bolo, também Matemática
