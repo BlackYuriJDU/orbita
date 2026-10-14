@@ -48,25 +48,34 @@ const Efeitos = (() => {
 
   /* Confete curto e o bonequinho dá um pulo. Quem pediu menos movimento no
      sistema (prefers-reduced-motion) não recebe nada disso. */
+  /* Confete curto em formas geométricas da identidade ÓRBITA.
+     O efeito nunca é obrigatório e respeita as duas preferências de redução. */
   function festa() {
+    if (document.body && document.body.classList.contains('modo-calmo')) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const cores = ['#0c3b5e', '#e0a060', '#6aa6c8', '#7fb08a'];
+
+    const cores = ['#FF7A1A', '#E9FF3D', '#0E7C86', '#7B2FF7', '#E4137A', '#F2E8D5'];
+    const formas = ['forma-bloco', 'forma-circulo', 'forma-losango', 'forma-roseta'];
     const caixa = document.createElement('div');
     caixa.className = 'confete';
     caixa.setAttribute('aria-hidden', 'true');
-    for (let i = 0; i < 16; i++) {
+
+    for (let i = 0; i < 18; i++) {
       const p = document.createElement('i');
-      p.style.left = 10 + Math.random() * 80 + '%';
+      p.className = formas[i % formas.length];
+      p.style.left = 8 + Math.random() * 84 + '%';
       p.style.background = cores[i % cores.length];
-      p.style.animationDelay = Math.random() * 0.25 + 's';
+      p.style.animationDelay = Math.random() * 0.18 + 's';
       caixa.appendChild(p);
     }
+
     document.body.appendChild(caixa);
-    setTimeout(() => caixa.remove(), 1800);
-    const b = document.querySelector('.boneco');
-    if (b) {
-      b.classList.add('pulo');
-      setTimeout(() => b.classList.remove('pulo'), 700);
+    setTimeout(() => caixa.remove(), 1550);
+
+    const boneco = document.querySelector('.boneco');
+    if (boneco) {
+      boneco.classList.add('pulo');
+      setTimeout(() => boneco.classList.remove('pulo'), 450);
     }
   }
 
