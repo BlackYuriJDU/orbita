@@ -3,6 +3,33 @@
    sensoriais continuam sendo do estudante, e movimento decorativo pode ser
    reduzido sem esconder o conteúdo necessário para aprender. */
 
+/* Tokens da identidade visual */
+:root {
+  --tinta: #171717;
+  --tinta-fraca: #353535;
+  --linha: #262626;
+  --papel: #F2E8D5;
+  --creme: #F2E8D5;
+  --superficie: #fff8ec;
+
+  --laranja: #FF7A1A;
+  --neon: #E9FF3D;
+  --petroleo: #0E7C86;
+  --roxo: #7B2FF7;
+  --magenta: #E4137A;
+
+  --acento: var(--laranja);
+  --acento-claro: var(--neon);
+  --feito: var(--petroleo);
+  --feito-claro: #dcefeb;
+  --acolhimento: var(--roxo);
+  --acolhimento-claro: #eee5ff;
+
+  --raio: 1.1rem;
+  --linha-alt: 56px;
+  --movimento: 1;
+}
+
 * { box-sizing: border-box; }
 
 html { font-size: 18px; }
