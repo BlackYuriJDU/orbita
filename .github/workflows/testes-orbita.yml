@@ -1,9 +1,11 @@
 name: Testes do ÓRBITA
 
+# Push na main e em PRs para a main. A branch publicada é a branch testada:
+# o gatilho antigo apontava para a branch do redesign, que morreu no squash —
+# depois disso, push na main não rodava verificação nenhuma.
 on:
   push:
-    branches:
-      - 'feat/orbita-identidade-visual-20261014'
+    branches: [main]
     paths:
       - 'site/**'
       - '.github/workflows/testes-orbita.yml'
@@ -12,6 +14,7 @@ on:
     paths:
       - 'site/**'
       - '.github/workflows/testes-orbita.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
