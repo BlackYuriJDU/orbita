@@ -119,26 +119,17 @@ A cor não substitui rótulos, contornos ou mensagens. As alternativas mantêm t
 borda visível e foco de teclado. A camada de confetes é curta e usa formas geométricas; o
 Modo Calmo mantém o enunciado, a matéria, as instruções e o rodapé, reduzindo a decoração.
 
-## Publicar (grátis, ~5 minutos)
+## Publicar — já está no ar
 
-O edital pede **link público do sistema web** — GitHub Pages, Netlify ou Vercel.
+O link público: **https://blackyurijdu.github.io/orbita/**
 
-**GitHub Pages**
+O deploy é automático. O `.github/workflows/pages.yml` publica a pasta `site/` no GitHub Pages
+a cada push na `main` (quando `site/**` muda); não há passo manual nem build. Para publicar em
+outro lugar (Netlify, Vercel), aponte o serviço para a pasta `site/` — os scripts clássicos
+continuam funcionando como estão.
 
-```bash
-git init
-git add .
-git commit -m "ÓRBITA — MVP da Maratona Dev Impacto"
-git branch -M main
-git remote add origin https://github.com/<seu-usuario>/orbita.git
-git push -u origin main
-```
-
-Depois: *Settings → Pages → Source: `main` / `(root)` → Save*. Em ~1 minuto o site está em
-`https://<seu-usuario>.github.io/orbita/`.
-
-> Os arquivos estão na pasta `site/`. Se preferir o repositório inteiro como raiz do Pages,
-> mova os cinco arquivos para a pasta superior antes de publicar.
+E o `.github/workflows/testes-orbita.yml` roda `node teste-sinal.js` a cada push na `main` e em
+cada pull request: a branch publicada é a mesma que passa pelas verificações.
 
 ---
 

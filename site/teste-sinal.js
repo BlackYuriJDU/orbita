@@ -400,6 +400,67 @@ noApp('abrirItem("por-aviso-celular"); respondeu(false); respondeu(false); respo
 conferir('22. errar nunca tira XP', noApp('dados.xp') === xpAntes);
 noApp('dados.itens = montarRotina(); dados.xp = 0; sessao = null');
 
+console.log('\nRobustez e avisos\n');
+
+/* --- 23. o conteúdo muda; a rotina salva se reconcilia -------------------- */
+/* Sem este filtro, um item que saiu do seed virava fantasma: continuava
+   contando no progresso (100% inalcançável) e o marcador AGORA podia
+   desaparecer. O log de tentativas nunca é tocado — ele é do aluno. */
+noApp(`
+  dados.itens = [
+    { itemId: 'mat-fracao-pizza', concluido: true },
+    { itemId: 'item-que-nao-existe-mais', concluido: false }
+  ];
+  dados.tentativas = [{ itemId: 'mat-fracao-pizza', materia: 'matematica', ajudaUsada: null, acertou: true, tentativasAteAcertar: 1 }];
+  reconciliarRotina();
+`);
+conferir('23. item que saiu do conteúdo some da rotina',
+  noApp('dados.itens.every(it => it.itemId !== "item-que-nao-existe-mais")'));
+conferir('23. a rotina volta a espelhar o conteúdo, na ordem canônica',
+  noApp('dados.itens.length') === 9 && noApp('dados.itens.every((it, i) => it.itemId === ITENS[i].id)'));
+conferir('23. o que o aluno já fez é preservado (pelo itemId)',
+  noApp('dados.itens[0].concluido') === true);
+conferir('23. pergunta que entrou no conteúdo volta como pendente',
+  noApp('dados.itens[1].itemId') === 'mat-proporcao-bolo' && noApp('dados.itens[1].concluido') === false);
+conferir('23. o log de tentativas não é tocado pela reconciliação',
+  noApp('dados.tentativas.length') === 1 && noApp('dados.tentativas[0].itemId') === 'mat-fracao-pizza');
+
+/* --- 24. armazenamento é fronteira: forma errada não derruba tela -------- */
+noApp(`localStorage.setItem('orbita.dados.v1', JSON.stringify({ itens: [{ itemId: 'mat-fracao-pizza', concluido: false }], tentativas: 5, xp: 'muito' }));`);
+const saneado = noApp('carregarDados()');
+conferir('24. tentativas não-array não derruba o perfil (vira lista vazia)',
+  Array.isArray(saneado.tentativas) && saneado.tentativas.length === 0);
+conferir('24. xp não-numérico volta a 0', saneado.xp === 0);
+conferir('24. o que é válido sobrevive à limpeza',
+  saneado.itens.length === 1 && saneado.itens[0].itemId === 'mat-fracao-pizza');
+
+/* --- 25. gravação que falha tem aviso na tela ---------------------------- */
+noApp('semGravacao = false; atualizarAvisoGravacao();');
+conferir('25. com gravação saudável, nenhum aviso aparece',
+  noApp('pegar("aviso-sem-gravacao").hidden') === true);
+const semGravar = noApp(`
+  const original = localStorage.setItem;
+  localStorage.setItem = () => { throw new Error('cota cheia'); };
+  salvarDados();
+  localStorage.setItem = original;
+  ({ semGravacao: semGravacao, visivel: pegar('aviso-sem-gravacao').hidden === false });
+`);
+conferir('25. quando a gravação falha, o aluno é avisado (nada de perda silenciosa)',
+  semGravar.semGravacao === true && semGravar.visivel === true);
+noApp('semGravacao = false; atualizarAvisoGravacao();');
+
+/* --- 26. "Ouvir a pergunta" sem voz cai no texto ------------------------- */
+noApp('abrirItem(ITENS[0].id);');
+conferir('26. sem voz, ouvirEnunciado() falha e o aviso aparece na tela',
+  noApp('ouvirEnunciado()') === false && noApp('pegar("aviso-sem-voz").hidden') === false);
+
+/* O contrato JS ↔ HTML: os avisos existem no index.html de verdade. */
+const htmlDaPagina = fs.readFileSync(path.join(aqui, 'index.html'), 'utf8');
+conferir('26. o aviso de gravação tem elemento no HTML (id="aviso-sem-gravacao")',
+  htmlDaPagina.includes('id="aviso-sem-gravacao"'));
+conferir('26. o aviso de voz tem elemento no HTML (id="aviso-sem-voz")',
+  htmlDaPagina.includes('id="aviso-sem-voz"'));
+
 console.log('\n' + '-'.repeat(58));
 if (falhou === 0) {
   console.log('  ' + passou + ' verificações passaram. A tese do projeto está de pé.');

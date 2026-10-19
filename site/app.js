@@ -47,6 +47,18 @@ function sentido(nome) {
 function som(tipo) { if (sentido('som') && typeof Efeitos !== 'undefined') Efeitos.som(tipo); }
 function festa() { if (sentido('festa') && typeof Efeitos !== 'undefined') Efeitos.festa(); }
 
+/* O armazenamento é fronteira: o que vem de fora pode ter sido editado à mão
+   ou escrito por outra versão. Forma errada não derruba tela — vira o valor
+   padrão. `tentativas` não-array viraria um crash em derivarPerfil(). */
+function sanearDados(lido) {
+  if (!lido || typeof lido !== 'object') return null;
+  if (!Array.isArray(lido.itens)) return null; // não é um save: tenta a próxima chave
+  if (!Array.isArray(lido.tentativas)) lido.tentativas = [];
+  if (typeof lido.xp !== 'number' || !isFinite(lido.xp)) lido.xp = 0;
+  lido.modoCalmo = !!lido.modoCalmo;
+  return lido;
+}
+
 function carregarDados() {
   for (const chave of [CHAVE, CHAVE_BAK]) {
     let texto = null;
@@ -54,12 +66,13 @@ function carregarDados() {
       texto = localStorage.getItem(chave);
     } catch (e) {
       semGravacao = true; // navegador bloqueou o acesso
-      return;
+      atualizarAvisoGravacao();
+      return null;
     }
     if (!texto) continue;
     try {
-      const lido = JSON.parse(texto);
-      if (lido && lido.itens) return lido; // o que veio inteiro vence
+      const saneado = sanearDados(JSON.parse(texto));
+      if (saneado) return saneado; // o que veio inteiro vence
     } catch (e) {
       /* JSON quebrado: tenta a próxima chave. Nunca apaga o aluno por causa
          de um arquivo corrompido — no máximo perde o último save. */
@@ -80,7 +93,15 @@ function salvarDados() {
     localStorage.setItem(CHAVE, texto);
   } catch (e) {
     semGravacao = true; // cota estourada ou modo privado
+    atualizarAvisoGravacao();
   }
+}
+
+/* Quando a gravação falha, o app continua funcionando em memória — mas o
+   aluno PRECISA saber: sem o aviso, ele fecharia a aba achando que está salvo. */
+function atualizarAvisoGravacao() {
+  const aviso = pegar('aviso-sem-gravacao');
+  if (aviso) aviso.hidden = !semGravacao;
 }
 
 /* A escada do escalonamento. 'ouvir' não está nela: não é um degrau do
@@ -102,6 +123,24 @@ function itemPorId(id) { return ITENS.find((i) => i.id === id); }
    mundo, e o histórico do aluno nunca é confundido com a lista de tarefas. */
 function montarRotina() {
   return ITENS.map((item) => ({ itemId: item.id, concluido: false }));
+}
+
+/* Conteúdo muda; rotina salva envelhece. Um item que saiu do seed virava
+   fantasma: sumia da tela, mas continuava contando no progresso (100% nunca
+   chegava) e o marcador AGORA podia desaparecer. Aqui a rotina é reconstruída
+   na ordem canônica: o que ainda existe mantém o "concluido" pelo itemId; o
+   que entrou de novo começa não concluído. O LOG de tentativas nunca é tocado:
+   o histórico é do aluno, o conteúdo é do sistema. */
+function reconciliarRotina() {
+  const antigos = new Map(dados.itens.map((it) => [it.itemId, it]));
+  const nova = ITENS.map((item) => {
+    const antigo = antigos.get(item.id);
+    return { itemId: item.id, concluido: !!(antigo && antigo.concluido) };
+  });
+  if (JSON.stringify(nova) !== JSON.stringify(dados.itens)) {
+    dados.itens = nova;
+    salvarDados();
+  }
 }
 
 /* O índice do primeiro item ainda não concluído — o único com peso visual
@@ -318,6 +357,17 @@ function falar(texto) {
   return true;
 }
 
+/* O botão "Ouvir a pergunta" da tela da tarefa. Sem voz no aparelho, o aviso
+   aparece NA TELA — o mesmo fallback que o painel de ajuda já tinha. Botão
+   que não faz nada e não explica é o pior dos dois mundos. */
+function ouvirEnunciado() {
+  if (!sessao) return false;
+  const deu = falar(itemPorId(sessao.itemId).enunciado);
+  const aviso = pegar('aviso-sem-voz');
+  if (aviso) aviso.hidden = deu;
+  return deu;
+}
+
 /* Leva o foco do teclado e do leitor de tela para onde o aluno precisa olhar.
    Sem isso, cada troca de tela deixava o foco num botão que sumiu. */
 function focar(el) {
@@ -390,6 +440,9 @@ function renderTarefa() {
   pegar('txt-materia').textContent = MATERIAS[item.materia];
   pegar('txt-enunciado').textContent = item.enunciado;
   pegar('btn-ouvir').hidden = !sentido('voz');
+  /* O aviso de voz refere-se ao último clique: cada render limpa. */
+  const avisoVoz = pegar('aviso-sem-voz');
+  if (avisoVoz) avisoVoz.hidden = true;
 
   const caixa = pegar('alternativas');
   caixa.innerHTML = '';
@@ -651,7 +704,10 @@ document.addEventListener('DOMContentLoaded', () => {
   dados.sentidos = Object.assign({ som: true, vibracao: true, voz: false, festa: true }, dados.sentidos);
   if (!dados.itens || !dados.itens.length) {
     dados.itens = montarRotina();
+  } else {
+    reconciliarRotina();
   }
+  atualizarAvisoGravacao();
 
   const calm = pegar('modo-calmo');
   calm.checked = dados.modoCalmo;
@@ -677,9 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   pegar('btn-continuar').addEventListener('click', () => irPara('rotina'));
-  pegar('btn-ouvir').addEventListener('click', () => {
-    if (sessao) falar(itemPorId(sessao.itemId).enunciado);
-  });
+  pegar('btn-ouvir').addEventListener('click', ouvirEnunciado);
 
   /* Qualquer volta para a tela principal passa por aqui: fechar sessão, trocar
      a tela e redesenhar. Três botões faziam isso à mão, e um esquecimento
