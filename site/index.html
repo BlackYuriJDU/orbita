@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ÓRBITA — aprenda do seu jeito</title>
   <meta name="description" content="Uma rotina de aprendizagem que adapta o caminho, respeitando o ritmo e as preferências de cada estudante.">
-  <meta name="theme-color" content="#171717">
+  <meta name="theme-color" content="#F2E8D5">
   <link rel="stylesheet" href="style.css">
+  <!-- Favicon é o próprio boneco em data URI: zero requisição, zero 404. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='19' fill='none' stroke='%23FF7A1A' stroke-width='7'/%3E%3Cg stroke='%23FF7A1A' stroke-width='7' stroke-linecap='round'%3E%3Cline x1='24' y1='13' x2='24' y2='28'/%3E%3Cline x1='24' y1='20' x2='15.5' y2='26.5'/%3E%3Cline x1='24' y1='20' x2='32.5' y2='26.5'/%3E%3Cline x1='24' y1='28' x2='17.5' y2='37'/%3E%3Cline x1='24' y1='28' x2='30.5' y2='37'/%3E%3C/g%3E%3Ccircle cx='24' cy='10.5' r='4' fill='%23FF7A1A'/%3E%3C/svg%3E">
 </head>
 <body>
 
@@ -40,6 +42,10 @@
       <span>Modo calmo</span>
     </label>
   </header>
+
+  <!-- Se o navegador bloquear ou lotar o armazenamento, o aluno descobre AQUI.
+       Perder o progresso em silêncio é o único desfecho inaceitável. -->
+  <p id="aviso-sem-gravacao" class="aviso-sem-gravacao" hidden>Não conseguimos salvar neste navegador (modo privado ou armazenamento cheio). O app continua funcionando, mas o progresso pode se perder ao fechar a página — use o "Baixar meu registro" na rotina para guardar.</p>
 
   <details class="sentidos">
     <summary>Meus sentidos</summary>
@@ -99,6 +105,7 @@
       <p class="materia" id="txt-materia"></p>
       <h2 id="txt-enunciado" class="enunciado"></h2>
       <button id="btn-ouvir" class="btn-secundario" hidden><span aria-hidden="true">🔊</span> Ouvir a pergunta</button>
+      <p id="aviso-sem-voz" class="aviso-sem-voz" hidden>Este aparelho não tem voz em português instalada. O enunciado está escrito acima — leia em voz alta.</p>
 
       <div id="alternativas" class="alternativas"></div>
 

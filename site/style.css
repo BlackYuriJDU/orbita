@@ -316,6 +316,11 @@ h2 { font-size: 1.7rem; line-height: 1.3; margin: 0 0 0.5rem; }
   border-radius: var(--raio);
 }
 
+/* O aviso de gravação usa o roxo do acolhimento, não a cor do erro: o app não
+   quebrou, só perdeu a persistência — e diz isso em vez de esconder.
+   A moldura vem do bloco que divide estilo com .msg-erro, mais abaixo. */
+.aviso-sem-gravacao { margin: 0.9rem 1.5rem 0; padding: 0.9rem 1.1rem; }
+
 /* escolher ajuda */
 
 .lista-ajudas { display: grid; gap: 0.75rem; }
@@ -702,7 +707,7 @@ main { padding: 0 1rem; }
   border-color: var(--tinta);
   box-shadow: 4px 4px 0 var(--petroleo);
 }
-.msg-erro, .aviso-sem-voz {
+.msg-erro, .aviso-sem-voz, .aviso-sem-gravacao {
   background: var(--acolhimento-claro);
   border: 2px solid var(--tinta);
   border-left: 8px solid var(--roxo);
@@ -859,6 +864,7 @@ button:disabled { opacity: 0.78; }
   .aba { flex: 1; padding: 0.55rem 0.6rem; }
   .calmo { font-size: 0.88rem; }
   .sentidos { margin-left: 0.9rem; margin-right: 0.9rem; }
+  .aviso-sem-gravacao { margin-left: 0.9rem; margin-right: 0.9rem; }
   main { padding: 0 0.9rem; }
   .tela { margin: 1.15rem auto 2rem; box-shadow: 5px 5px 0 var(--tinta); }
   .placar-linha {
